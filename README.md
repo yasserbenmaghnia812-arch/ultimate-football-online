@@ -45,13 +45,13 @@ Open the repository root as a Unity project. Install Android Build Support, Andr
 
 ## Build an APK with GitHub Actions
 
-1. Create or activate a valid Unity license.
-2. In GitHub, open **Settings → Secrets and variables → Actions**.
-3. Add these repository Actions secrets: `UNITY_LICENSE` (contents of your `.ulf` file), `UNITY_EMAIL`, and `UNITY_PASSWORD` (Unity account credentials). Follow the [GameCI Personal License activation guide](https://game.ci/docs/github/activation/) to generate and locate the license file.
-4. Open **Actions → Build Android APK → Run workflow** (or push to `main`).
-5. Download `Ultimate-Football-Android-APK` from a successful run's artifacts.
+The Android build workflow is prepared, but an APK has **not** yet been produced. The latest verified run stopped at the Unity-license check before Unity Editor started, so C# compilation and Android packaging have not yet been tested.
 
-The workflow uses GameCI Unity Builder v4 and the custom static method `FootballBuildScript.BuildAndroid`. A successful build still depends on a valid Unity license and a successful Unity import/compile/build. No APK is claimed until a successful run and artifact are verified.
+The previous repository instructions referenced GameCI's old manual Personal-license activation flow. That route is not valid for Unity Personal: Unity's current documentation says Personal licenses are activated by signing in through Unity Hub, and manual license-request activation is not available for Personal. Do not upload a manually generated Personal `.ulf` from the obsolete activation workflow.
+
+The remaining build dependency is a supported Unity build environment that can authenticate the Unity Personal account. Unity Build Automation supports Android cloud builds, but availability and account eligibility must be confirmed in the Unity Dashboard before relying on it. The repository's GitHub Actions workflow remains available for a valid, supported CI license setup; it is not currently able to build without that setup.
+
+Workflow: [Build Android APK](.github/workflows/build-android.yml). A downloadable APK will only be announced after a successful run and artifact verification.
 
 ## Research references
 
