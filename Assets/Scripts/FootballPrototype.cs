@@ -99,9 +99,24 @@ public sealed class FootballPrototype : MonoBehaviour
         var collider = go.GetComponent<CapsuleCollider>();
         collider.height = 1.8f;
         var attributes = go.AddComponent<FootballPlayerAttributes>();
-        var visual = go.AddComponent<FootballCharacterVisual>();
-        visual.Initialize(mat);
-        go.AddComponent<FootballCharacterAnimationDriver>();
+        GameObject modelPrefab = Resources.Load<GameObject>(
+            controlled ? "Footballers/BluePlayer" : "Footballers/RedPlayer");
+        var animationDriver = go.AddComponent<FootballCharacterAnimationDriver>();
+        if (modelPrefab != null)
+        {
+            GameObject model = Instantiate(modelPrefab, go.transform);
+            model.name = "LicensedFootballerModel";
+            model.transform.localPosition = Vector3.zero;
+            model.transform.localRotation = Quaternion.identity;
+            model.transform.localScale = Vector3.one;
+            go.GetComponent<Renderer>().enabled = false;
+            animationDriver.Bind(model.GetComponentInChildren<Animator>());
+        }
+        else
+        {
+            var visual = go.AddComponent<FootballCharacterVisual>();
+            visual.Initialize(mat);
+        }
         if (controlled)
         {
             player = go.transform;
