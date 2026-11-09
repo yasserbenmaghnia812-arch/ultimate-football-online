@@ -17,7 +17,10 @@ public class FootballPrototype : MonoBehaviour
 
     private void Start()
     {
-        Application.targetFrameRate = 60;
+        Application.targetFrameRate = 30;
+        QualitySettings.vSyncCount = 0;
+        QualitySettings.antiAliasing = 0;
+        QualitySettings.shadows = ShadowQuality.Disable;
         BuildPitch();
         BuildPlayer();
         BuildBall();
@@ -27,8 +30,9 @@ public class FootballPrototype : MonoBehaviour
 
     private Material Mat(Color color)
     {
-        var material = new Material(Shader.Find("Universal Render Pipeline/Lit"));
-        if (material.shader == null) material = new Material(Shader.Find("Standard"));
+        Shader shader = Shader.Find("Universal Render Pipeline/Lit");
+        if (shader == null) shader = Shader.Find("Standard");
+        var material = new Material(shader);
         material.color = color;
         return material;
     }
@@ -126,6 +130,10 @@ public class FootballPrototype : MonoBehaviour
         float w = 78, h = 64, pad = 18;
         float x = pad, y = Screen.height - h - pad;
         GUI.skin.button.fontSize = 26;
+        Color oldBackground = GUI.backgroundColor;
+        GUI.backgroundColor = new Color(0.72f, 0.025f, 0.08f, 0.96f);
+        GUI.skin.button.normal.textColor = Color.white;
+        GUI.skin.button.hover.textColor = Color.white;
         if (GUI.RepeatButton(new Rect(x + w, y - h, w, h), "↑")) touchMove.y = 1;
         else if (GUI.RepeatButton(new Rect(x + w, y + h, w, h), "↓")) touchMove.y = -1;
         else touchMove.y = 0;
@@ -137,6 +145,7 @@ public class FootballPrototype : MonoBehaviour
             if (ball != null && Vector3.Distance(player.position, ball.position) < 2.2f)
                 ball.GetComponent<Rigidbody>().AddForce((player.forward + Vector3.up * 0.2f) * 10f, ForceMode.Impulse);
         }
-        GUI.Label(new Rect(12, 12, 340, 32), "ULTIMATE FOOTBALL - PROTOTYPE");
+        GUI.Label(new Rect(12, 12, 340, 32), "ULTIMATE FOOTBALL");
+        GUI.backgroundColor = oldBackground;
     }
 }
