@@ -12,6 +12,15 @@ public sealed class FootballTeamStatistics
     public int fouls;
     public int corners;
     public int offsides;
+    public int yellowCards;
+    public int redCards;
+    public int saves;
+    public int clearances;
+    public int interceptions;
+    public int freeKicks;
+    public int penalties;
+    public int throwIns;
+    public int goalKicks;
     public float possessionSeconds;
 
     public float PassAccuracy => passes <= 0 ? 0f : 100f * completedPasses / passes;
@@ -45,6 +54,23 @@ public sealed class FootballMatchStatistics : MonoBehaviour
     public void RegisterFoul(bool isHome) { Select(isHome).fouls++; }
     public void RegisterCorner(bool isHome) { Select(isHome).corners++; }
     public void RegisterOffside(bool isHome) { Select(isHome).offsides++; }
+    public void RegisterCard(bool isHome, bool red)
+    {
+        if (red) Select(isHome).redCards++;
+        else Select(isHome).yellowCards++;
+    }
+    public void RegisterSave(bool isHome) { Select(isHome).saves++; }
+    public void RegisterClearance(bool isHome) { Select(isHome).clearances++; }
+    public void RegisterInterception(bool isHome) { Select(isHome).interceptions++; }
+    public void RegisterRestart(bool isHome, FootballRestartType type)
+    {
+        FootballTeamStatistics team = Select(isHome);
+        if (type == FootballRestartType.DirectFreeKick || type == FootballRestartType.IndirectFreeKick) team.freeKicks++;
+        else if (type == FootballRestartType.Penalty) team.penalties++;
+        else if (type == FootballRestartType.ThrowIn) team.throwIns++;
+        else if (type == FootballRestartType.GoalKick) team.goalKicks++;
+        else if (type == FootballRestartType.Corner) team.corners++;
+    }
     public void TickPossession(bool homeHasBall, float deltaTime)
     {
         if (deltaTime <= 0f) return;
