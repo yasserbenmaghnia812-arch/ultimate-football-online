@@ -4,6 +4,7 @@ using UnityEngine;
 [Serializable]
 public sealed class FootballTeamStatistics
 {
+    public int goals;
     public int shots;
     public int shotsOnTarget;
     public int passes;
@@ -35,6 +36,8 @@ public sealed class FootballMatchStatistics : MonoBehaviour
 
     public FootballTeamStatistics Home => home;
     public FootballTeamStatistics Away => away;
+
+    public void RegisterGoal(bool isHome) { Select(isHome).goals++; }
 
     public void RegisterShot(bool isHome, bool onTarget)
     {
