@@ -56,10 +56,10 @@ jobs:
           assert "SmoothedFrameRateRange=" in engine, "Frame pacing range is missing"
 
           device = Path("Config/DefaultDeviceProfiles.ini").read_text(encoding="utf-8")
-          for setting in ("r.ScreenPercentage=75", "r.ShadowQuality=0", "r.PostProcessQuality=0", "t.MaxFPS=30"):
-              if setting == "r.PostProcessQuality=0":
-                  continue  # post-process sub-effects are disabled individually in this profile
+          for setting in ("r.ScreenPercentage=60", "r.ViewDistanceScale=0.45", "r.ShadowQuality=0", "r.Streaming.PoolSize=256", "t.MaxFPS=30"):
               assert setting in device, "Missing Android performance setting: " + setting
+          for setting in ("[Android_Low DeviceProfile]", "r.ScreenPercentage=55", "r.Streaming.PoolSize=224"):
+              assert setting in device, "Missing Android low-end fallback setting: " + setting
 
           game_instance = Path("Source/Football/Private/UltimateFootballGameInstance.cpp").read_text(encoding="utf-8")
           assert 'SetCurrentCulture(TEXT("ar"))' in game_instance, "Arabic startup culture is missing"
