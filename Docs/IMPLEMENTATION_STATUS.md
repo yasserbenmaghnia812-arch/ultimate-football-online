@@ -6,8 +6,8 @@ This file distinguishes code foundations from features that have been imported, 
 
 - Runtime-generated pitch, goals, 22-player prototype, ball physics, basic AI movement, mobile touch controls and follow camera.
 - Procedural player silhouettes and simple limb swing; these are placeholders, not professional rigged footballers.
-- Animator bridge for future licensed humanoid prefabs; runtime loading now checks `Resources/Footballers/BluePlayer` and `Resources/Footballers/RedPlayer`, falling back to procedural silhouettes when absent. See `CHARACTER_IMPORT_PIPELINE.md`. It reads Speed and IsSprinting and supports Kick, Tackle and Celebrate triggers, but no rigged character or animation controller is imported yet.
-- Tactical role positioning, player attributes, stamina, local career save, squad/card data foundations, localization and Android quality settings.
+- Animator bridge for future licensed humanoid prefabs; runtime loading checks `Resources/Footballers/BluePlayer` and `Resources/Footballers/RedPlayer`, falling back to procedural silhouettes when absent. It now exposes Kick, Pass, Tackle, Dribble, Header, Dive, Save, ThrowIn and Celebrate triggers. See `CHARACTER_IMPORT_PIPELINE.md`. No rigged character or football animation controller is imported yet.
+- Tactical role positioning, player attributes, stamina, local career save, 18 fictional squad records, starting-XI validation, formation selection, a runtime squad/player-card panel, localization and Android quality settings.
 - Offside decision called when the controlled player passes; the defender line includes the goalkeeper. The geometry still does not cover all IFAB exceptions or AI-team passes.
 - Referee foundation for foul registration, direct free-kick/penalty classification, restart notifications, reckless-challenge/DOGSO card inputs, per-player yellow-card tracking and second-yellow dismissal. Contact detection and restart gameplay are not fully integrated.
 - Statistics fields for shots, passes, tackles, fouls, corners, offsides, possession, cards, saves, clearances, interceptions, free kicks, penalties, throw-ins and goal kicks. Some counters still have no reliable event producer and therefore are not yet complete match statistics.
@@ -29,17 +29,17 @@ These are source-level corrections only. They have not been compiled or play-tes
 - Professional footballer models, realistic football kits, face/body customization, skeleton rigs, motion-captured football animation, ball-contact IK, goalkeeper dive/save animations, headers and celebrations.
 - Full IFAB referee simulation: automatic foul/contact classification, advantage, handball, DOGSO context, referee positioning, VAR, restart placement, free-kick wall, penalty taker/keeper control, throw-ins, corners, goal kicks and all restart controls.
 - Complete event-based statistics with verified pass completion, shots on target, saves, interceptions, clearances and player-level match ratings.
-- Finished main menu, team selection, roster editor, player-card collection/progression screens, tactics, settings and controller remapping.
-- Online services integration: authentication, matchmaking, lobbies, invites, authoritative server simulation, synchronization, reconnects, anti-cheat and 22-player 11v11.
+- Full production menu system, interactive substitutions, persistent player-card collection/progression, team selection, tactical player positioning, settings and controller remapping. The current team/card panel is an initial local prototype UI.
+- Online gameplay replication: the source now has anonymous Unity Authentication, Relay-backed 22-member session creation, join-code joining/copying and leave flow. It does not yet synchronize the match simulation, implement matchmaking queues, reconnect policy, anti-cheat or a dedicated authoritative server.
 - Actual Unity asset imports (the new loader is only a hookup), successful Unity Editor compile, automated play-mode tests, Android package build, install test or device performance measurements.
 
 ## Build status
 
-The prior GitHub Actions Unity build stopped at the Unity license gate before Unity Editor compilation. Recent source edits have not been validated by a Unity compile. No APK artifact is currently verified. The cloud build route still requires the Unity account and GitHub repository to be connected in Unity Build Automation.
+The prior GitHub Actions Unity build stopped at the Unity license gate before Unity Editor compilation. The new package dependencies and source edits have not been validated by a Unity compile. No APK artifact is currently verified. The cloud build route still requires the Unity account and GitHub repository to be connected in Unity Build Automation.
 
 ## Free asset/service shortlist
 
-See [FREE_ASSETS_AND_FEATURE_ROADMAP.md](FREE_ASSETS_AND_FEATURE_ROADMAP.md) for Mixamo, Human Basic Motions FREE, Kenney, free crowd audio and Unity multiplayer service options with licensing and cost cautions.
+See [FREE_ASSETS_AND_FEATURE_ROADMAP.md](FREE_ASSETS_AND_FEATURE_ROADMAP.md) and [CHARACTER_IMPORT_PIPELINE.md](CHARACTER_IMPORT_PIPELINE.md) for candidate rigged characters, football clips, general locomotion, audio and licensing checks. No external binary asset has been imported into the repository.
 
 ## Asset policy
 
