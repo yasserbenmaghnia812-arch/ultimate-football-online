@@ -1,3 +1,4 @@
+- [Licensed humanoid footballer import pipeline](Docs/CHARACTER_IMPORT_PIPELINE.md)
 - [Free assets, licensing and feature integration roadmap](Docs/FREE_ASSETS_AND_FEATURE_ROADMAP.md)
 # Ultimate Football Online
 
