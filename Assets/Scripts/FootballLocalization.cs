@@ -18,7 +18,11 @@ public sealed class FootballLocalization : MonoBehaviour
         { "tackle", new[] { "افتكاك", "Tacle", "Tackle" } },
         { "pause", new[] { "إيقاف", "Pause", "Pause" } },
         { "resume", new[] { "متابعة", "Reprendre", "Resume" } },
-        { "full_time", new[] { "نهاية المباراة", "Fin du match", "Full time" } }
+        { "full_time", new[] { "نهاية المباراة", "Fin du match", "Full time" } },
+        { "team", new[] { "الفريق", "Équipe", "Team" } },
+        { "cards", new[] { "بطاقات اللاعبين", "Cartes joueurs", "Player cards" } },
+        { "formation", new[] { "الخطة", "Formation", "Formation" } },
+        { "squad", new[] { "التشكيلة", "Effectif", "Squad" } }
     };
 
     public bool IsRightToLeft => Language == FootballLanguage.Arabic;
