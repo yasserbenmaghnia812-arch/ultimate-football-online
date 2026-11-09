@@ -18,6 +18,7 @@ public sealed class FootballOnlineRooms : MonoBehaviour
     private string joinCodeInput = "";
     private string status = "Online rooms: not connected";
     private bool busy;
+    private bool visible;
     private Rect panel = new Rect(18, 56, 430, 270);
 
     public string CurrentJoinCode => currentSession != null ? currentSession.Code : "";
@@ -113,7 +114,8 @@ public sealed class FootballOnlineRooms : MonoBehaviour
 
     private void OnGUI()
     {
-        if (GUI.Button(new Rect(18, 12, 145, 40), "ONLINE ROOM")) panel = GUI.Window(GetInstanceID(), panel, DrawPanel, "ONLINE MULTIPLAYER");
+        if (GUI.Button(new Rect(18, 12, 145, 40), "ONLINE ROOM")) visible = !visible;
+        if (visible) panel = GUI.Window(GetInstanceID(), panel, DrawPanel, "ONLINE MULTIPLAYER");
     }
 
     private void DrawPanel(int id)
@@ -136,7 +138,7 @@ public sealed class FootballOnlineRooms : MonoBehaviour
             if (GUILayout.Button("LEAVE ROOM", GUILayout.Height(38))) LeaveRoom();
         }
         GUI.enabled = true;
-        if (GUILayout.Button("CLOSE")) panel.width = 1;
+        if (GUILayout.Button("CLOSE")) visible = false;
         GUI.DragWindow(new Rect(0, 0, 10000, 24));
     }
 }
