@@ -1,60 +1,45 @@
-# Branding and Feature Roadmap
+# Branding, performance and feature roadmap
 
 Owner / in-game credit: **Yasser Benmaghnia**  
 Engine baseline: **Unreal Engine 5.8**  
-Target: Android APK
+Target: Android APK, including entry-level 4 GB RAM phones
 
-## Status discipline
-This is a plan, not a claim that every feature is implemented. Verify each item in Unreal Editor and on target hardware before marking it complete.
+## Current verified repository state
+This document tracks repository configuration only. A setting is not proof of runtime performance; every result must be compiled and measured on a physical device.
 
-## Stage 0 — project baseline
-- [x] Replace the Unity prototype tree with the UE 5.8 Blueprint project.
-- [x] Preserve upstream README and license notices.
-- [x] Transfer upstream Git LFS objects into this repository's LFS storage.
-- [ ] Clone, run `git lfs pull`, compile the native Football module, and test both reveal and match maps.
+## Performance pass — Android
+- [x] Disable expensive desktop rendering paths: Lumen, ray tracing, virtual shadow maps and Substrate.
+- [x] Add a conservative Android profile: 60% render resolution, reduced view distance, no dynamic shadows/post-processing, smaller texture pool and reduced foliage/particle/mesh detail.
+- [x] Add an Android_Low fallback profile with 55% render resolution and a 224 MB texture streaming pool.
+- [ ] Measure CPU/GPU frame time, memory and thermal throttling on the Galaxy A06; 30 FPS is a target, not a verified result. The reported 16 FPS still needs an on-device capture to identify the actual bottleneck.
+- [ ] If frame time remains high, profile animation tick rates, AI perception/update frequency, physics sub-stepping, draw calls and material complexity before reducing gameplay quality further.
 
-## Stage 1 — identity and opening
-- [x] Set the product/game display name to Ultimate Football Online.
-- [x] Add a native UMG red full-screen opening splash in C++ (runtime verification pending).
-- [x] Add a centered white title with a 3-second dismissal timer (runtime timing verification pending).
-- [x] Add “Yasser Benmaghnia” creator credit to the opening widget (runtime verification pending).
-- [x] Set Lvl_Reveal as the startup map; verify its transition to the main menu and mobile safe areas in-editor.
+## Arabic and localization
+- [x] Set Arabic as the initial runtime culture in the native GameInstance.
+- [ ] Translate all Blueprint/UMG labels and menus using Unreal Localization Dashboard resources.
+- [ ] Verify RTL layout, Arabic shaping and a bundled Arabic-capable font on Android.
+- [ ] Add language selection and English fallback. Setting culture alone does not translate hard-coded widget strings.
 
-## Stage 2 — core gameplay
+## Camera and visual direction
+- [ ] Implement a wide, dynamic broadcast camera that tracks the ball, blends smoothly between play phases and adjusts zoom without abrupt motion. This requires editing the binary match Blueprint in Unreal Editor.
+- [ ] Visual palette: retain a deep purple base and saturated electric blue as the two identity accents; simplify the rest to neutral dark surfaces, restrained highlights and high-contrast white text. Avoid excessive bloom, neon gradients and competing accent colors.
+- [ ] Validate camera readability and UI safe areas in landscape on a phone.
+
+## Gameplay
 - [ ] Audit movement, acceleration, collisions and animation blending.
 - [ ] Tune ball mass, friction, restitution and rolling resistance.
 - [ ] Implement charged shot power, loft and spin/curl.
 - [ ] Add pass targeting and ball trapping.
 - [ ] Add stamina drain/recovery and fatigue effects.
-- [ ] Add player attributes and role-aware tactical AI.
-
-## Stage 3 — match rules and presentation
-- [ ] Implement fouls, advantage, free kicks and penalties.
-- [ ] Implement yellow/red cards and second-yellow dismissal.
+- [ ] Add fouls, advantage, free kicks, penalties and cards.
 - [ ] Add substitutions, match clock, score and event statistics.
-- [x] Set Arabic as the initial runtime culture; full Arabic RTL widget translation and font verification remain pending.
-- [ ] Add English/Arabic localization resources for all Blueprint labels and menus.
-- [ ] Add a wide broadcast-style follow camera with ball tracking and adjustable zoom; requires editing and testing the match Blueprint in Unreal Editor.
-- [ ] Use only licensed or original models, animations, music and commentary.
+- [ ] Validate a full 22-player local match before online expansion.
 
-## Stage 4 — teams and online
-- [ ] Build team selection, formations and squad management.
-- [ ] Validate a full 22-player local match.
-- [ ] Design authoritative server simulation before competitive online play.
-- [ ] Add lobbies, invites, reconnect handling and match-result validation.
-- [ ] Load-test network traffic and server costs.
-
-## Stage 5 — Android and release
-- [x] Add Android package name, landscape orientation and ARM64 baseline settings.
-- [x] Disable costly desktop renderer features and add an Android low-end device profile targeting up to 30 FPS.
+## Online and release
+- [ ] Design authoritative server simulation, lobbies, invites and reconnect handling.
 - [ ] Configure and validate UE 5.8 Android SDK/NDK/JDK.
-- [ ] Profile memory, thermals and frame time on target Android hardware; 30 FPS is a target, not a verified result.
-- [ ] Tune low/medium/high scalability profiles from device measurements.
-- [ ] Test touch controls, UI scaling, suspend/resume and network changes.
-- [ ] Produce a signed APK and verify installation and gameplay on a physical Android device.
+- [ ] Build, install and test a signed APK on physical hardware.
+- [ ] Run sustained gameplay tests and record average FPS, 1% low FPS, memory and device temperature.
 
-## Build constraint
-GitHub Actions can package the project only with a compatible Unreal Engine 5.8 build environment and valid Epic/Unreal build access. No licensing bypass is used.
-
-## Current technical limitation
-The match map and gameplay Blueprints are Git LFS binary assets. GitHub's text-file editor cannot safely modify their camera nodes or existing widget labels. Those changes must be made in Unreal Editor after the LFS objects are pulled; do not replace the binary assets with text placeholders.
+## Binary asset limitation
+The match map and gameplay Blueprints are Git LFS binary assets. GitHub's text editor cannot safely alter their camera nodes, materials or widget labels. Those edits must be made in Unreal Editor after Git LFS objects are pulled; do not replace binary assets with text placeholders.
