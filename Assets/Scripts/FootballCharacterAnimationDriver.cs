@@ -30,12 +30,14 @@ public sealed class FootballCharacterAnimationDriver : MonoBehaviour
     public void Bind(Animator target)
     {
         animator = target;
+        if (animator != null) animator.applyRootMotion = false;
         CacheParameters();
     }
 
     private void Awake()
     {
         if (animator == null) animator = GetComponentInChildren<Animator>();
+        if (animator != null) animator.applyRootMotion = false;
         CacheParameters();
         previousPosition = transform.position;
     }
