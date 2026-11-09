@@ -124,16 +124,16 @@ public sealed class FootballPrototype : MonoBehaviour
     private void BuildTeams()
     {
         Vector3[] formation = {
-            new Vector3(0,1.1f,-18), new Vector3(-10,1.1f,-12), new Vector3(-3,1.1f,-13),
-            new Vector3(3,1.1f,-13), new Vector3(10,1.1f,-12), new Vector3(-9,1.1f,-5),
-            new Vector3(-3,1.1f,-6), new Vector3(3,1.1f,-6), new Vector3(9,1.1f,-5),
-            new Vector3(-4,1.1f,-1), new Vector3(4,1.1f,-1)
+            new Vector3(0,1.0f,-18), new Vector3(-10,1.0f,-12), new Vector3(-3,1.0f,-13),
+            new Vector3(3,1.0f,-13), new Vector3(10,1.0f,-12), new Vector3(-9,1.0f,-5),
+            new Vector3(-3,1.0f,-6), new Vector3(3,1.0f,-6), new Vector3(9,1.0f,-5),
+            new Vector3(-4,1.0f,-1), new Vector3(4,1.0f,-1)
         };
         for (int i = 0; i < TeamSize; i++)
         {
             Transform home = MakePlayer("Blue_" + (i + 1), formation[i], blueMat, i == 9);
             blueTeam.Add(home);
-            Vector3 away = new Vector3(formation[i].x, 1.1f, -formation[i].z);
+            Vector3 away = new Vector3(formation[i].x, 1.0f, -formation[i].z);
             redTeam.Add(MakePlayer("Red_" + (i + 1), away, redMat, false));
         }
     }
@@ -178,13 +178,17 @@ public sealed class FootballPrototype : MonoBehaviour
             input *= playerAttributes.MovementMultiplier();
         }
         player.position += input * 6.2f * Time.deltaTime;
-        player.position = new Vector3(Mathf.Clamp(player.position.x, -13, 13), 1.1f, Mathf.Clamp(player.position.z, -21, 21));
+        player.position = new Vector3(Mathf.Clamp(player.position.x, -13, 13), 1.0f, Mathf.Clamp(player.position.z, -21, 21));
         if (input.sqrMagnitude > 0.01f) player.rotation = Quaternion.LookRotation(input);
         if (shootPressed || Input.GetKeyDown(KeyCode.Space)) Kick(10f, 0.16f);
         if (passPressed || Input.GetKeyDown(KeyCode.E)) Kick(5.5f, 0.04f);
         if (tacklePressed || Input.GetKeyDown(KeyCode.Q)) Tackle();
         shootPressed = passPressed = tacklePressed = false;
-        if (matchRules != null) matchRules.Tick(Time.deltaTime);
+        if (matchRules != null)
+        {
+            matchRules.Tick(Time.deltaTime);
+            if (matchRules.State == FootballMatchState.HalfTime) matchRules.ResumeSecondHalf();
+        }
         UpdateAI();
         matchTime -= Time.deltaTime;
         if (matchTime <= 0) matchTime = 0;
@@ -270,18 +274,18 @@ public sealed class FootballPrototype : MonoBehaviour
     private Vector3 GetFormationPosition(int index, bool blue)
     {
         float sign = blue ? -1f : 1f;
-        if (index == 0) return new Vector3(0, 1.1f, sign * 18f);
+        if (index == 0) return new Vector3(0, 1.0f, sign * 18f);
         if (index <= 4)
         {
             float[] x = { -10f, -3f, 3f, 10f };
-            return new Vector3(x[index - 1], 1.1f, sign * 12f);
+            return new Vector3(x[index - 1], 1.0f, sign * 12f);
         }
         if (index <= 8)
         {
             float[] x = { -9f, -3f, 3f, 9f };
-            return new Vector3(x[index - 5], 1.1f, sign * 5f);
+            return new Vector3(x[index - 5], 1.0f, sign * 5f);
         }
-        return new Vector3(index == 9 ? -4f : 4f, 1.1f, sign * 1f);
+        return new Vector3(index == 9 ? -4f : 4f, 1.0f, sign * 1f);
     }
 
     private void Tackle()
@@ -304,8 +308,8 @@ public sealed class FootballPrototype : MonoBehaviour
 
     private void CheckGoal()
     {
-        if (ball.position.z > 21.4f && Mathf.Abs(ball.position.x) < 3.1f) { redScore++; if (matchRules != null) matchRules.AddGoal(false); ResetKickoff(); }
-        else if (ball.position.z < -21.4f && Mathf.Abs(ball.position.x) < 3.1f) { blueScore++; if (matchRules != null) matchRules.AddGoal(true); ResetKickoff(); }
+        if (ball.position.z > 21.4f && ball.position.y < 1.95f && Mathf.Abs(ball.position.x) < 3.1f) { redScore++; if (matchRules != null) matchRules.AddGoal(false); ResetKickoff(); }
+        else if (ball.position.z < -21.4f && ball.position.y < 1.95f && Mathf.Abs(ball.position.x) < 3.1f) { blueScore++; if (matchRules != null) matchRules.AddGoal(true); ResetKickoff(); }
     }
 
     private void ResetKickoff()
@@ -317,7 +321,9 @@ public sealed class FootballPrototype : MonoBehaviour
             ballBody.angularVelocity = Vector3.zero;
             ballBody.position = new Vector3(0, 0.21f, 0);
         }
-        player.position = new Vector3(0, 1.1f, -8);
+        player.position = new Vector3(0, 1.0f, -8);
+        for (int i = 0; i < blueTeam.Count; i++) if (blueTeam[i] != player) blueTeam[i].position = GetFormationPosition(i, true);
+        for (int i = 0; i < redTeam.Count; i++) redTeam[i].position = GetFormationPosition(i, false);
     }
 
     private void OnGUI()
@@ -340,9 +346,9 @@ public sealed class FootballPrototype : MonoBehaviour
         else if (GUI.RepeatButton(new Rect(x + 2*w, y, w, h), "→", buttonStyle)) touchMove.x = 1;
         else touchMove.x = 0;
         if (GUI.RepeatButton(new Rect(x + w, y + h, w, h), "↓", buttonStyle)) touchMove.y = -1;
-        if (GUI.Button(new Rect(Screen.width - 104, Screen.height - 84, 88, 64), "SHOOT", buttonStyle)) shootPressed = true;
-        if (GUI.Button(new Rect(Screen.width - 104, Screen.height - 158, 88, 60), "PASS", buttonStyle)) passPressed = true;
-        if (GUI.Button(new Rect(Screen.width - 104, Screen.height - 232, 88, 60), "TACKLE", buttonStyle)) tacklePressed = true;
+        if (GUI.Button(new Rect(Screen.width - 104, Screen.height - 84, 88, 64), (FootballLocalization.Instance != null ? FootballLocalization.Instance.Get("shoot") : "SHOOT"), buttonStyle)) shootPressed = true;
+        if (GUI.Button(new Rect(Screen.width - 104, Screen.height - 158, 88, 60), (FootballLocalization.Instance != null ? FootballLocalization.Instance.Get("pass") : "PASS"), buttonStyle)) passPressed = true;
+        if (GUI.Button(new Rect(Screen.width - 104, Screen.height - 232, 88, 60), (FootballLocalization.Instance != null ? FootballLocalization.Instance.Get("tackle") : "TACKLE"), buttonStyle)) tacklePressed = true;
         GUI.color = Color.white;
         GUI.backgroundColor = Color.white;
     }
