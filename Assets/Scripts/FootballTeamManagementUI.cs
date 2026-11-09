@@ -40,7 +40,8 @@ public sealed class FootballTeamManagementUI : MonoBehaviour
     private void OnGUI()
     {
         if (label == null) { label = new GUIStyle(GUI.skin.label); label.fontSize = 16; label.normal.textColor = Color.white; }
-        if (GUI.Button(new Rect(Screen.width - 154, 12, 140, 42), "TEAM / CARDS")) visible = !visible;
+        string teamLabel = FootballLocalization.Instance != null ? FootballLocalization.Instance.Get("team") : "TEAM / CARDS";
+        if (GUI.Button(new Rect(Screen.width - 154, 12, 140, 42), teamLabel)) visible = !visible;
         if (!visible) return;
         panel.width = Mathf.Min(540, Screen.width - 24);
         panel.height = Mathf.Min(590, Screen.height - 72);
@@ -50,8 +51,10 @@ public sealed class FootballTeamManagementUI : MonoBehaviour
     private void DrawPanel(int id)
     {
         GUILayout.BeginHorizontal();
-        if (GUILayout.Toggle(tab == 0, "SQUAD", "Button")) tab = 0;
-        if (GUILayout.Toggle(tab == 1, "PLAYER CARDS", "Button")) tab = 1;
+        string squadLabel = FootballLocalization.Instance != null ? FootballLocalization.Instance.Get("squad") : "SQUAD";
+        string cardsLabel = FootballLocalization.Instance != null ? FootballLocalization.Instance.Get("cards") : "PLAYER CARDS";
+        if (GUILayout.Toggle(tab == 0, squadLabel, "Button")) tab = 0;
+        if (GUILayout.Toggle(tab == 1, cardsLabel, "Button")) tab = 1;
         GUILayout.EndHorizontal();
         if (tab == 0) DrawSquad();
         else DrawCards();
@@ -61,7 +64,8 @@ public sealed class FootballTeamManagementUI : MonoBehaviour
 
     private void DrawSquad()
     {
-        GUILayout.Label("Formation: " + squad.ActiveFormation + " | Substitutions: " + squad.SubstitutionsRemaining, label);
+        string formationLabel = FootballLocalization.Instance != null ? FootballLocalization.Instance.Get("formation") : "Formation";
+        GUILayout.Label(formationLabel + ": " + squad.ActiveFormation + " | Substitutions: " + squad.SubstitutionsRemaining, label);
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("4-3-3")) squad.SetFormation("4-3-3");
         if (GUILayout.Button("4-4-2")) squad.SetFormation("4-4-2");
