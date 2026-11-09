@@ -221,6 +221,8 @@ public sealed class FootballPrototype : MonoBehaviour
         player.position += input * 6.2f * Time.deltaTime;
         player.position = new Vector3(Mathf.Clamp(player.position.x, -13, 13), 1.0f, Mathf.Clamp(player.position.z, -21, 21));
         if (input.sqrMagnitude > 0.01f) player.rotation = Quaternion.LookRotation(input);
+        if (input.sqrMagnitude > 0.01f && Vector3.Distance(player.position, ball.position) < 1.8f)
+            player.GetComponent<FootballCharacterAnimationDriver>()?.PlayDribble();
         if (shootPressed || Input.GetKeyDown(KeyCode.Space)) Kick(10f, 0.16f);
         if (passPressed || Input.GetKeyDown(KeyCode.E)) Kick(5.5f, 0.04f);
         if (tacklePressed || Input.GetKeyDown(KeyCode.Q)) Tackle();
