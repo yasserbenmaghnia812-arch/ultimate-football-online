@@ -225,7 +225,8 @@ public sealed class FootballPrototype : MonoBehaviour
     private void Kick(float power, float lift)
     {
         FootballCharacterAnimationDriver animationDriver = player != null ? player.GetComponent<FootballCharacterAnimationDriver>() : null;
-        animationDriver?.PlayKick();
+        if (power >= 9f) animationDriver?.PlayKick();
+        else animationDriver?.PlayPass();
         if (Vector3.Distance(player.position, ball.position) > 2.25f) return;
         Vector3 direction = player.forward.sqrMagnitude > 0.1f ? player.forward : Vector3.forward;
         if (power >= 9f)
@@ -242,7 +243,7 @@ public sealed class FootballPrototype : MonoBehaviour
                 bool inOwnHalf = receiver.position.z < 0f;
                 if (referee.CheckOffsideAtPass(receiver, ball.position, defenders, true, inOwnHalf, false))
                 {
-                    if (matchStatistics != null) matchStatistics.RegisterOffside(true);
+                    // The referee system records the offside once and awards the restart.
                     return;
                 }
             }
@@ -400,6 +401,7 @@ public sealed class FootballPrototype : MonoBehaviour
         Vector3 away = ball.position - nearest.position;
         away.y = 0.08f;
         if (ballPhysics != null) ballPhysics.Kick(away.normalized, 6.5f, 0.08f, Vector3.zero);
+        if (matchStatistics != null) matchStatistics.RegisterTackle(true);
         if (playerAttributes != null) playerAttributes.stamina = Mathf.Max(0f, playerAttributes.stamina - 3.5f);
     }
 
@@ -457,8 +459,20 @@ public sealed class FootballPrototype : MonoBehaviour
 
     private void CheckGoal()
     {
-        if (ball.position.z > 21.4f && ball.position.y < 1.95f && Mathf.Abs(ball.position.x) < 3.1f) { redScore++; if (matchRules != null) matchRules.AddGoal(false); ResetKickoff(); }
-        else if (ball.position.z < -21.4f && ball.position.y < 1.95f && Mathf.Abs(ball.position.x) < 3.1f) { blueScore++; if (matchRules != null) matchRules.AddGoal(true); ResetKickoff(); }
+        if (ball.position.z > 21.4f && ball.position.y < 1.95f && Mathf.Abs(ball.position.x) < 3.1f)
+        {
+            redScore++;
+            if (matchRules != null) matchRules.AddGoal(false);
+            if (matchStatistics != null) matchStatistics.RegisterGoal(false);
+            ResetKickoff();
+        }
+        else if (ball.position.z < -21.4f && ball.position.y < 1.95f && Mathf.Abs(ball.position.x) < 3.1f)
+        {
+            blueScore++;
+            if (matchRules != null) matchRules.AddGoal(true);
+            if (matchStatistics != null) matchStatistics.RegisterGoal(true);
+            ResetKickoff();
+        }
     }
 
     private void ResetKickoff()
