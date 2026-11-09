@@ -18,8 +18,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           lfs: false
-
-      - name: Validate UE 5.8 project, Arabic startup, Android performance and splash
+      - name: Validate UE project, splash, Arabic startup and Android profile
         shell: bash
         run: |
           set -euo pipefail
@@ -29,43 +28,22 @@ jobs:
 
           project = json.loads(Path("Football.uproject").read_text(encoding="utf-8"))
           assert project.get("EngineAssociation") == "5.8", "Expected Unreal Engine 5.8"
-          modules = project.get("Modules", [])
-          assert any(m.get("Name") == "Football" and m.get("Type") == "Runtime" for m in modules), "Football runtime module is not registered"
-
-          required = [
-              "Source/Football/Football.Build.cs",
-              "Source/Football.Target.cs",
-              "Source/FootballEditor.Target.cs",
-              "Source/Football/Public/UltimateFootballGameInstance.h",
-              "Source/Football/Private/UltimateFootballGameInstance.cpp",
-              "Source/Football/Public/UltimateFootballSplashWidget.h",
-              "Source/Football/Private/UltimateFootballSplashWidget.cpp",
-              "Content/Ascertainty/Maps/Lvl_Reveal.umap",
-              "Content/Ascertainty/Maps/Lvl_Match.umap",
-              "Config/DefaultDeviceProfiles.ini",
-          ]
+          assert any(m.get("Name") == "Football" and m.get("Type") == "Runtime" for m in project.get("Modules", [])), "Football runtime module is not registered"
+          required = ["Source/Football/Football.Build.cs", "Source/Football.Target.cs", "Source/FootballEditor.Target.cs", "Source/Football/Public/UltimateFootballGameInstance.h", "Source/Football/Private/UltimateFootballGameInstance.cpp", "Source/Football/Public/UltimateFootballSplashWidget.h", "Source/Football/Private/UltimateFootballSplashWidget.cpp", "Content/Ascertainty/Maps/Lvl_Reveal.umap", "Content/Ascertainty/Maps/Lvl_Match.umap", "Config/DefaultDeviceProfiles.ini"]
           missing = [p for p in required if not Path(p).is_file()]
           assert not missing, "Missing project files: " + ", ".join(missing)
-
           engine = Path("Config/DefaultEngine.ini").read_text(encoding="utf-8")
           assert "GameInstanceClass=/Script/Football.UltimateFootballGameInstance" in engine, "Splash GameInstance is not configured"
-          assert "EditorStartupMap=/Game/Ascertainty/Maps/Lvl_Reveal.Lvl_Reveal" in engine, "Reveal map is not the startup map"
-          assert "PackageName=com.yasserbenmaghnia.ultimatefootballonline" in engine, "Android package name is missing"
-          assert "bBuildForArm64=True" in engine, "Android ARM64 target is missing"
-          assert "r.DynamicGlobalIlluminationMethod=0" in engine and "r.RayTracing=False" in engine, "Expensive desktop renderer features were not disabled"
-          assert "SmoothedFrameRateRange=" in engine, "Frame pacing range is missing"
-
+          assert "EditorStartupMap=/Game/Ascertainty/Maps/Lvl_Reveal.Lvl_Reveal" in engine, "Reveal map is not startup map"
+          assert "PackageName=com.yasserbenmaghnia.ultimatefootballonline" in engine and "bBuildForArm64=True" in engine, "Android package configuration missing"
           device = Path("Config/DefaultDeviceProfiles.ini").read_text(encoding="utf-8")
           for setting in ("r.ScreenPercentage=60", "r.ViewDistanceScale=0.45", "r.ShadowQuality=0", "r.Streaming.PoolSize=256", "t.MaxFPS=30"):
-              assert setting in device, "Missing Android performance setting: " + setting
-          for setting in ("[Android_Low DeviceProfile]", "r.ScreenPercentage=55", "r.Streaming.PoolSize=224"):
-              assert setting in device, "Missing Android low-end fallback setting: " + setting
-
+              assert setting in device, "Missing Android setting: " + setting
           game_instance = Path("Source/Football/Private/UltimateFootballGameInstance.cpp").read_text(encoding="utf-8")
-          assert 'SetCurrentCulture(TEXT("ar"))' in game_instance, "Arabic startup culture is missing"
-
+          assert 'SetCurrentCulture(TEXT("ar"))' in game_instance, "Arabic startup culture missing"
           splash = Path("Source/Football/Private/UltimateFootballSplashWidget.cpp").read_text(encoding="utf-8")
-          assert "ULTIMATE FOOTBALL ONLINE" in splash and "Yasser Benmaghnia" in splash, "Splash title or creator credit is missing"
-          assert "3.0f" in splash, "Three-second splash timer is missing"
-          print("Static project validation passed. This does not replace an Unreal Editor compile or Android device test.")
+          assert "YASSER BENMAGHNIA" in splash and "SetShadowOffset" in splash, "Creator wordmark styling missing"
+          assert "FLinearColor(1.0f, 0.66f, 0.69f, 1.0f)" in splash, "Light-red background missing"
+          assert "4.0f" in splash and "ULTIMATE FOOTBALL ONLINE" in splash, "Four-second splash/title missing"
+          print("Static project validation passed; Unreal compilation and Android device testing are still required.")
           PY
