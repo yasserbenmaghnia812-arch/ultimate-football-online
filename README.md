@@ -3,7 +3,7 @@
 **An original football game project by Yasser Benmaghnia.**  
 Engine: **Unreal Engine 5.8** · Foundation: [Ascertainty FC](https://github.com/grain-by-grain/ascertainty-fc)
 
-This repository replaces the previous Unity prototype with an Unreal Engine 5.8 project combining native C++ runtime code and the upstream Blueprint gameplay assets. It retains the upstream project files and licensing notices. Planned features are not represented as completed until implemented and tested.
+This repository combines native C++ runtime code and upstream Blueprint gameplay assets. Planned features are not represented as completed until implemented and tested.
 
 ## Included gameplay foundation
 - Playable football match prototype
@@ -16,21 +16,27 @@ This repository replaces the previous Unity prototype with an Unreal Engine 5.8 
 ## Project identity and target
 - Game title: **Ultimate Football Online**
 - Creator credit: **Yasser Benmaghnia**
-- Planned intro: red cinematic screen, centered white game title for 3 seconds, then main menu
+- Opening: red cinematic screen, centered white game title for 3 seconds
 - Target: Android APK, pending Android toolchain configuration and physical-device testing
+
+## Android performance update
+The project now disables expensive desktop rendering features (Lumen, ray tracing, virtual shadow maps and Substrate) and includes an Android low-end device profile with reduced resolution, view distance, shadows and post-processing. The profile caps the frame rate at 30 FPS. This is a performance-oriented baseline, not a measured guarantee: compile and profile on the target phone before claiming a stable FPS.
+
+## Arabic language status
+The native GameInstance now selects Arabic as the initial culture. This does **not** automatically translate hard-coded Blueprint labels: Arabic RTL localization resources, fonts and widget layout still need to be added and verified in Unreal Editor.
+
+## Camera status
+A wide broadcast-style camera that tracks the ball is still pending. The match map and gameplay Blueprints are Git LFS binary assets and must be opened and edited in Unreal Engine 5.8; do not attempt to overwrite them through GitHub's text editor.
 
 ## Open in Unreal Engine
 1. Install Unreal Engine **5.8**.
 2. Install Git and Git LFS; run `git lfs install`.
 3. Clone this repository.
-4. Run `git lfs pull` to retrieve the binary assets now stored in this repository's LFS storage.
+4. Run `git lfs pull` to retrieve the binary assets.
 5. Generate IDE project files if prompted, build the `FootballEditor` target for UE 5.8, then open `Football.uproject` and press Play.
 
 ## Opening splash implementation
-The native `Football` GameInstance displays a full-screen red UMG splash with the centered white title **ULTIMATE FOOTBALL ONLINE** and the creator credit **Yasser Benmaghnia**. A 3-second timer removes the splash and reveals the startup map. The implementation is committed; compile and in-engine runtime verification are still required.
-
-## Android status
-Android package identity, landscape orientation, and an ARM64 baseline are configured. Android packaging is not yet verified: configure the UE 5.8 Android SDK, NDK and JDK toolchain, package the project, and test the APK on a physical Android device.
+The native `Football` GameInstance displays a full-screen red UMG splash with the centered white title **ULTIMATE FOOTBALL ONLINE** and the creator credit **Yasser Benmaghnia**. A 3-second timer removes the splash. Compile and in-engine runtime verification are still required.
 
 ## Roadmap
 See [Docs/BRANDING_AND_FEATURE_ROADMAP.md](Docs/BRANDING_AND_FEATURE_ROADMAP.md).
