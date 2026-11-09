@@ -15,6 +15,8 @@ public sealed class FootballPrototype : MonoBehaviour
     private bool shootPressed, passPressed, tacklePressed, switchPressed, sprintPressed;
     private FootballMatchRules matchRules;
     private FootballMatchStatistics matchStatistics;
+    private FootballRefereeSystem referee;
+    private float possessionSample;
     private FootballCareerProfile careerProfile;
     private bool careerResultSaved;
     private int blueScore, redScore;
@@ -44,6 +46,8 @@ public sealed class FootballPrototype : MonoBehaviour
         BuildBall();
         matchRules = gameObject.AddComponent<FootballMatchRules>();
         matchStatistics = gameObject.AddComponent<FootballMatchStatistics>();
+        referee = gameObject.AddComponent<FootballRefereeSystem>();
+        referee.Whistle += OnRefereeWhistle;
         careerProfile = FootballCareerSaveSystem.Load();
         matchRules.StateChanged += OnMatchStateChanged;
         matchRules.StartMatch();
@@ -207,6 +211,7 @@ public sealed class FootballPrototype : MonoBehaviour
         }
         UpdateAI();
         SeparatePlayers();
+        UpdatePossessionStatistics();
         matchTime -= Time.deltaTime;
         if (matchTime <= 0) matchTime = 0;
         CheckGoal();
@@ -218,12 +223,27 @@ public sealed class FootballPrototype : MonoBehaviour
     private void Kick(float power, float lift)
     {
         if (Vector3.Distance(player.position, ball.position) > 2.25f) return;
-        if (matchStatistics != null)
-        {
-            if (power >= 9f) matchStatistics.RegisterShot(true, false);
-            else matchStatistics.RegisterPass(true, true);
-        }
         Vector3 direction = player.forward.sqrMagnitude > 0.1f ? player.forward : Vector3.forward;
+        if (power >= 9f)
+        {
+            if (matchStatistics != null) matchStatistics.RegisterShot(true, false);
+        }
+        else
+        {
+            Transform receiver = FindForwardPassReceiver(direction);
+            if (receiver != null && referee != null)
+            {
+                Transform[] defenders = new Transform[Mathf.Max(0, redTeam.Count - 1)];
+                for (int i = 1; i < redTeam.Count; i++) defenders[i - 1] = redTeam[i];
+                bool inOwnHalf = player.position.z < 0f;
+                if (referee.CheckOffsideAtPass(receiver, ball.position, defenders, true, inOwnHalf, false))
+                {
+                    if (matchStatistics != null) matchStatistics.RegisterOffside(true);
+                    return;
+                }
+            }
+            if (matchStatistics != null) matchStatistics.RegisterPass(true, false);
+        }
         float baseSpeed = power >= 9f ? 22f : 13f;
         float shotSpeed = playerAttributes != null ? playerAttributes.GetKickSpeed(baseSpeed) : baseSpeed;
         float accuracy = playerAttributes != null ? playerAttributes.GetShotAccuracy() : 0.7f;
@@ -378,6 +398,49 @@ public sealed class FootballPrototype : MonoBehaviour
         if (playerAttributes != null) playerAttributes.stamina = Mathf.Max(0f, playerAttributes.stamina - 3.5f);
     }
 
+    private Transform FindForwardPassReceiver(Vector3 direction)
+    {
+        Transform best = null;
+        float bestScore = float.MaxValue;
+        for (int i = 0; i < blueTeam.Count; i++)
+        {
+            Transform candidate = blueTeam[i];
+            if (candidate == player) continue;
+            Vector3 delta = candidate.position - player.position;
+            float distance = delta.magnitude;
+            if (distance < 1.5f || distance > 14f) continue;
+            float forwardDot = Vector3.Dot(direction.normalized, delta.normalized);
+            if (forwardDot < 0.45f) continue;
+            float score = distance + (1f - forwardDot) * 4f;
+            if (score < bestScore) { bestScore = score; best = candidate; }
+        }
+        return best;
+    }
+
+    private void OnRefereeWhistle(string decision, Vector3 location)
+    {
+        if (ballBody == null) return;
+        ballBody.linearVelocity = Vector3.zero;
+        ballBody.angularVelocity = Vector3.zero;
+        ballBody.position = location;
+    }
+
+    private void UpdatePossessionStatistics()
+    {
+        if (matchStatistics == null || ball == null) return;
+        possessionSample += Time.deltaTime;
+        if (possessionSample < 0.5f) return;
+        float nearestBlue = float.MaxValue;
+        float nearestRed = float.MaxValue;
+        for (int i = 0; i < blueTeam.Count; i++)
+            nearestBlue = Mathf.Min(nearestBlue, Vector3.Distance(ball.position, blueTeam[i].position));
+        for (int i = 0; i < redTeam.Count; i++)
+            nearestRed = Mathf.Min(nearestRed, Vector3.Distance(ball.position, redTeam[i].position));
+        if (Mathf.Min(nearestBlue, nearestRed) < 2.2f)
+            matchStatistics.TickPossession(nearestBlue <= nearestRed, possessionSample);
+        possessionSample = 0f;
+    }
+
     private void OnMatchStateChanged(FootballMatchState state)
     {
         if (state != FootballMatchState.FullTime || careerResultSaved) return;
@@ -391,6 +454,7 @@ public sealed class FootballPrototype : MonoBehaviour
     {
         if (ball.position.z > 21.4f && ball.position.y < 1.95f && Mathf.Abs(ball.position.x) < 3.1f) { redScore++; if (matchRules != null) matchRules.AddGoal(false); ResetKickoff(); }
         else if (ball.position.z < -21.4f && ball.position.y < 1.95f && Mathf.Abs(ball.position.x) < 3.1f) { blueScore++; if (matchRules != null) matchRules.AddGoal(true); ResetKickoff(); }
+        else if (Mathf.Abs(ball.position.x) > 14f || Mathf.Abs(ball.position.z) > 22.2f) { referee?.Signal("Ball out of play - restart required", ball.position); ResetKickoff(); }
     }
 
     private void ResetKickoff()
