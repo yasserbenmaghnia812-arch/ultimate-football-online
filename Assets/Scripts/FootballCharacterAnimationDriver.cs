@@ -15,6 +15,12 @@ public sealed class FootballCharacterAnimationDriver : MonoBehaviour
     [SerializeField] private string kickTrigger = "Kick";
     [SerializeField] private string tackleTrigger = "Tackle";
     [SerializeField] private string celebrateTrigger = "Celebrate";
+    [SerializeField] private string passTrigger = "Pass";
+    [SerializeField] private string headerTrigger = "Header";
+    [SerializeField] private string diveTrigger = "Dive";
+    [SerializeField] private string saveTrigger = "Save";
+    [SerializeField] private string dribbleTrigger = "Dribble";
+    [SerializeField] private string throwInTrigger = "ThrowIn";
 
     private readonly HashSet<int> floatParameters = new HashSet<int>();
     private readonly HashSet<int> boolParameters = new HashSet<int>();
@@ -61,6 +67,12 @@ public sealed class FootballCharacterAnimationDriver : MonoBehaviour
     }
 
     public void PlayKick() { Trigger(kickTrigger); }
+    public void PlayPass() { Trigger(passTrigger); }
+    public void PlayHeader() { Trigger(headerTrigger); }
+    public void PlayDive() { Trigger(diveTrigger); }
+    public void PlaySave() { Trigger(saveTrigger); }
+    public void PlayDribble() { Trigger(dribbleTrigger); }
+    public void PlayThrowIn() { Trigger(throwInTrigger); }
     public void PlayTackle() { Trigger(tackleTrigger); }
     public void PlayCelebrate() { Trigger(celebrateTrigger); }
 
