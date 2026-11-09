@@ -8,6 +8,8 @@ public sealed class FootballPrototype : MonoBehaviour
     private readonly List<Transform> redTeam = new List<Transform>();
     private Transform player, ball;
     private Rigidbody ballBody;
+    private AdvancedFootballPhysics ballPhysics;
+    private FootballPlayerAttributes playerAttributes;
     private Camera gameCamera;
     private Vector2 touchMove;
     private bool shootPressed, passPressed;
@@ -80,7 +82,11 @@ public sealed class FootballPrototype : MonoBehaviour
         go.GetComponent<Renderer>().sharedMaterial = mat;
         var collider = go.GetComponent<CapsuleCollider>();
         collider.height = 1.8f;
-        if (controlled) player = go.transform;
+        if (controlled)
+        {
+            player = go.transform;
+            playerAttributes = go.AddComponent<FootballPlayerAttributes>();
+        }
         return go.transform;
     }
 
@@ -130,15 +136,18 @@ public sealed class FootballPrototype : MonoBehaviour
     {
         var obj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
         obj.name = "Football";
-        obj.transform.position = new Vector3(0, 0.55f, 0);
-        obj.transform.localScale = Vector3.one * 0.72f;
+        // 1 Unity unit = 1 metre; regulation-size ball diameter is approximately 0.22 m.
+        obj.transform.position = new Vector3(0, 0.21f, 0);
+        obj.transform.localScale = Vector3.one * 0.22f;
         obj.GetComponent<Renderer>().sharedMaterial = whiteMat;
         ballBody = obj.AddComponent<Rigidbody>();
         ballBody.mass = 0.43f;
-        ballBody.linearDamping = 0.22f;
-        ballBody.angularDamping = 0.08f;
+        ballBody.linearDamping = 0.015f;
+        ballBody.angularDamping = 0.035f;
         ballBody.interpolation = RigidbodyInterpolation.Interpolate;
         ballBody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        ballPhysics = obj.AddComponent<AdvancedFootballPhysics>();
+        ballPhysics.Initialize(ballBody);
         ball = obj.transform;
     }
 
@@ -157,6 +166,11 @@ public sealed class FootballPrototype : MonoBehaviour
         Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
         if (input.sqrMagnitude < 0.01f) input = new Vector3(touchMove.x, 0, touchMove.y);
         input = Vector3.ClampMagnitude(input, 1);
+        if (playerAttributes != null)
+        {
+            playerAttributes.TickMovement(input.sqrMagnitude > 0.01f, Time.deltaTime);
+            input *= playerAttributes.MovementMultiplier();
+        }
         player.position += input * 6.2f * Time.deltaTime;
         player.position = new Vector3(Mathf.Clamp(player.position.x, -13, 13), 1.1f, Mathf.Clamp(player.position.z, -21, 21));
         if (input.sqrMagnitude > 0.01f) player.rotation = Quaternion.LookRotation(input);
@@ -176,7 +190,14 @@ public sealed class FootballPrototype : MonoBehaviour
     {
         if (Vector3.Distance(player.position, ball.position) > 2.25f) return;
         Vector3 direction = player.forward.sqrMagnitude > 0.1f ? player.forward : Vector3.forward;
-        ballBody.AddForce((direction + Vector3.up * lift) * power, ForceMode.Impulse);
+        float baseSpeed = power >= 9f ? 22f : 13f;
+        float shotSpeed = playerAttributes != null ? playerAttributes.GetKickSpeed(baseSpeed) : baseSpeed;
+        float accuracy = playerAttributes != null ? playerAttributes.GetShotAccuracy() : 0.7f;
+        float boundedAimVariation = (1f - accuracy) * 0.10f;
+        direction = Quaternion.Euler(0f, Random.Range(-boundedAimVariation, boundedAimVariation) * 90f, 0f) * direction;
+        Vector3 spin = Vector3.Cross(Vector3.up, direction) * (power >= 9f ? 2.2f : 0.7f);
+        if (ballPhysics != null) ballPhysics.Kick(direction, shotSpeed, lift, spin);
+        else ballBody.AddForce((direction + Vector3.up * lift).normalized * shotSpeed * ballBody.mass, ForceMode.Impulse);
     }
 
     private void UpdateAI()
@@ -226,9 +247,13 @@ public sealed class FootballPrototype : MonoBehaviour
 
     private void ResetKickoff()
     {
-        ballBody.linearVelocity = Vector3.zero;
-        ballBody.angularVelocity = Vector3.zero;
-        ballBody.position = new Vector3(0, 0.55f, 0);
+        if (ballPhysics != null) ballPhysics.ResetBall(new Vector3(0, 0.21f, 0));
+        else
+        {
+            ballBody.linearVelocity = Vector3.zero;
+            ballBody.angularVelocity = Vector3.zero;
+            ballBody.position = new Vector3(0, 0.21f, 0);
+        }
         player.position = new Vector3(0, 1.1f, -8);
     }
 
