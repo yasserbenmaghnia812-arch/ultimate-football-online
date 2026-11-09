@@ -102,6 +102,8 @@ public sealed class FootballMatchRules : MonoBehaviour
         RestartPosition = position;
         RestartForHome = homeTeam;
         RestartAwarded?.Invoke(type, position, homeTeam);
+        FootballMatchStatistics stats = GetComponent<FootballMatchStatistics>();
+        if (stats != null) stats.RegisterRestart(homeTeam, type);
         MatchEvent?.Invoke(type + (homeTeam ? " awarded to home" : " awarded to away"));
     }
 
@@ -112,6 +114,8 @@ public sealed class FootballMatchRules : MonoBehaviour
 
     public void IssueCard(bool homeTeam, FootballDisciplineCard card)
     {
+        FootballMatchStatistics stats = GetComponent<FootballMatchStatistics>();
+        if (stats != null) stats.RegisterCard(homeTeam, card == FootballDisciplineCard.Red);
         if (card == FootballDisciplineCard.Yellow)
         {
             if (homeTeam) HomeYellowCards++; else AwayYellowCards++;
