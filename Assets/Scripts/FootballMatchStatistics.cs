@@ -12,7 +12,7 @@ public sealed class FootballTeamStatistics
     public int fouls;
     public int corners;
     public int offsides;
-    public int possessionSeconds;
+    public float possessionSeconds;
 
     public float PassAccuracy => passes <= 0 ? 0f : 100f * completedPasses / passes;
     public float ShotAccuracy => shots <= 0 ? 0f : 100f * shotsOnTarget / shots;
@@ -48,7 +48,7 @@ public sealed class FootballMatchStatistics : MonoBehaviour
     public void TickPossession(bool homeHasBall, float deltaTime)
     {
         if (deltaTime <= 0f) return;
-        Select(homeHasBall).possessionSeconds += Mathf.RoundToInt(deltaTime);
+        Select(homeHasBall).possessionSeconds += deltaTime;
     }
 
     public void ResetStatistics()
@@ -61,7 +61,7 @@ public sealed class FootballMatchStatistics : MonoBehaviour
     {
         get
         {
-            int total = home.possessionSeconds + away.possessionSeconds;
+            float total = home.possessionSeconds + away.possessionSeconds;
             return total == 0 ? 50f : 100f * home.possessionSeconds / total;
         }
     }
