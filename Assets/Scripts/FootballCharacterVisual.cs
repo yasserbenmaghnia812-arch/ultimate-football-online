@@ -9,15 +9,15 @@ public sealed class FootballCharacterVisual : MonoBehaviour
 {
     private Transform leftArm, rightArm, leftLeg, rightLeg;
     private Vector3 lastPosition;
-    private Material shirtMaterial, skinMaterial, shortsMaterial;
+    private Material shirtMaterial;
+    private static Material skinMaterial, shortsMaterial, bootMaterial;
 
     public void Initialize(Material teamMaterial)
     {
         shirtMaterial = teamMaterial;
-        skinMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard"));
-        skinMaterial.color = new Color(0.72f, 0.52f, 0.38f);
-        shortsMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard"));
-        shortsMaterial.color = new Color(0.08f, 0.09f, 0.12f);
+        if (skinMaterial == null) skinMaterial = ColorMaterial(new Color(0.72f, 0.52f, 0.38f));
+        if (shortsMaterial == null) shortsMaterial = ColorMaterial(new Color(0.08f, 0.09f, 0.12f));
+        if (bootMaterial == null) bootMaterial = bootMaterial;
 
         Renderer baseRenderer = GetComponent<Renderer>();
         if (baseRenderer != null) baseRenderer.sharedMaterial = shirtMaterial;
@@ -26,10 +26,10 @@ public sealed class FootballCharacterVisual : MonoBehaviour
         AddPart("Neck", PrimitiveType.Cylinder, new Vector3(0f, 0.72f, 0f), new Vector3(0.10f, 0.12f, 0.10f), skinMaterial);
         leftArm = AddPart("LeftArm", PrimitiveType.Capsule, new Vector3(-0.48f, 0.05f, 0f), new Vector3(0.18f, 0.48f, 0.18f), shirtMaterial);
         rightArm = AddPart("RightArm", PrimitiveType.Capsule, new Vector3(0.48f, 0.05f, 0f), new Vector3(0.18f, 0.48f, 0.18f), shirtMaterial);
-        leftLeg = AddPart("LeftLeg", PrimitiveType.Capsule, new Vector3(-0.20f, -0.62f, 0f), new Vector3(0.22f, 0.48f, 0.22f), shortsMaterial);
-        rightLeg = AddPart("RightLeg", PrimitiveType.Capsule, new Vector3(0.20f, -0.62f, 0f), new Vector3(0.22f, 0.48f, 0.22f), shortsMaterial);
-        AddPart("LeftBoot", PrimitiveType.Cube, new Vector3(-0.20f, -0.91f, 0.10f), new Vector3(0.22f, 0.12f, 0.36f), ColorMaterial(Color.black));
-        AddPart("RightBoot", PrimitiveType.Cube, new Vector3(0.20f, -0.91f, 0.10f), new Vector3(0.22f, 0.12f, 0.36f), ColorMaterial(Color.black));
+        leftLeg = AddPart("LeftLeg", PrimitiveType.Capsule, new Vector3(-0.20f, -0.42f, 0f), new Vector3(0.22f, 0.48f, 0.22f), shortsMaterial);
+        rightLeg = AddPart("RightLeg", PrimitiveType.Capsule, new Vector3(0.20f, -0.42f, 0f), new Vector3(0.22f, 0.48f, 0.22f), shortsMaterial);
+        AddPart("LeftBoot", PrimitiveType.Cube, new Vector3(-0.20f, -0.79f, 0.10f), new Vector3(0.22f, 0.12f, 0.36f), ColorMaterial(Color.black));
+        AddPart("RightBoot", PrimitiveType.Cube, new Vector3(0.20f, -0.79f, 0.10f), new Vector3(0.22f, 0.12f, 0.36f), ColorMaterial(Color.black));
         lastPosition = transform.position;
     }
 
