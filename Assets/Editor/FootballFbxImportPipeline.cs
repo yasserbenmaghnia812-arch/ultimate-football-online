@@ -5,7 +5,8 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEngine;
-using UnityEngine.Networking;
+using Unity.Netcode;
+using Unity.Netcode.Components;
 
 public sealed class FootballFbxImportPipeline : AssetPostprocessor
 {
@@ -56,7 +57,7 @@ public sealed class FootballFbxImportPipeline : AssetPostprocessor
             var importer = AssetImporter.GetAtPath(path) as ModelImporter;
             if (importer != null &&
                 (importer.animationType != ModelImporterAnimationType.Human ||
-                 !importer.importAnimation || !importer.optimizeGameObjects.Equals(false)))
+                 !importer.importAnimation || importer.optimizeGameObjects))
             {
                 importer.animationType = ModelImporterAnimationType.Human;
                 importer.avatarSetup = ModelImporterAvatarSetup.CreateFromThisModel;
