@@ -98,31 +98,36 @@ public sealed class FootballPrototype : MonoBehaviour
 
     private Transform MakePlayer(string name, Vector3 pos, Material mat, bool controlled)
     {
-        var go = GameObject.CreatePrimitive(PrimitiveType.Capsule);
-        go.name = name;
-        go.transform.position = pos;
-        go.GetComponent<Renderer>().sharedMaterial = mat;
-        var collider = go.GetComponent<CapsuleCollider>();
-        collider.height = 1.8f;
-        var attributes = go.AddComponent<FootballPlayerAttributes>();
         GameObject modelPrefab = Resources.Load<GameObject>(
             controlled ? "Footballers/BluePlayer" : "Footballers/RedPlayer");
-        var animationDriver = go.AddComponent<FootballCharacterAnimationDriver>();
-        if (modelPrefab != null)
+        GameObject go = modelPrefab != null
+            ? Instantiate(modelPrefab, pos, Quaternion.identity)
+            : GameObject.CreatePrimitive(PrimitiveType.Capsule);
+        go.name = name;
+        go.transform.position = pos;
+
+        Collider collider = go.GetComponent<Collider>();
+        if (collider == null) collider = go.AddComponent<CapsuleCollider>();
+        CapsuleCollider capsule = collider as CapsuleCollider;
+        if (capsule != null) capsule.height = 1.8f;
+
+        FootballPlayerAttributes attributes = go.GetComponent<FootballPlayerAttributes>();
+        if (attributes == null) attributes = go.AddComponent<FootballPlayerAttributes>();
+
+        FootballCharacterAnimationDriver animationDriver = go.GetComponent<FootballCharacterAnimationDriver>();
+        if (animationDriver == null) animationDriver = go.AddComponent<FootballCharacterAnimationDriver>();
+        Animator animator = go.GetComponentInChildren<Animator>(true);
+        if (animator != null) animationDriver.Bind(animator);
+
+        if (modelPrefab == null)
         {
-            GameObject model = Instantiate(modelPrefab, go.transform);
-            model.name = "LicensedFootballerModel";
-            model.transform.localPosition = Vector3.zero;
-            model.transform.localRotation = Quaternion.identity;
-            model.transform.localScale = Vector3.one;
-            go.GetComponent<Renderer>().enabled = false;
-            animationDriver.Bind(model.GetComponentInChildren<Animator>());
-        }
-        else
-        {
-            var visual = go.AddComponent<FootballCharacterVisual>();
+            Renderer renderer = go.GetComponent<Renderer>();
+            if (renderer != null) renderer.sharedMaterial = mat;
+            FootballCharacterVisual visual = go.GetComponent<FootballCharacterVisual>();
+            if (visual == null) visual = go.AddComponent<FootballCharacterVisual>();
             visual.Initialize(mat);
         }
+
         if (controlled)
         {
             player = go.transform;
@@ -175,19 +180,25 @@ public sealed class FootballPrototype : MonoBehaviour
 
     private void BuildBall()
     {
-        var obj = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        GameObject networkBallPrefab = Resources.Load<GameObject>("Footballers/NetworkBall");
+        GameObject obj = networkBallPrefab != null
+            ? Instantiate(networkBallPrefab, new Vector3(0, 0.21f, 0), Quaternion.identity)
+            : GameObject.CreatePrimitive(PrimitiveType.Sphere);
         obj.name = "Football";
         // 1 Unity unit = 1 metre; regulation-size ball diameter is approximately 0.22 m.
         obj.transform.position = new Vector3(0, 0.21f, 0);
         obj.transform.localScale = Vector3.one * 0.22f;
-        obj.GetComponent<Renderer>().sharedMaterial = whiteMat;
-        ballBody = obj.AddComponent<Rigidbody>();
+        Renderer renderer = obj.GetComponent<Renderer>();
+        if (renderer != null) renderer.sharedMaterial = whiteMat;
+        ballBody = obj.GetComponent<Rigidbody>();
+        if (ballBody == null) ballBody = obj.AddComponent<Rigidbody>();
         ballBody.mass = 0.43f;
         ballBody.linearDamping = 0.015f;
         ballBody.angularDamping = 0.035f;
         ballBody.interpolation = RigidbodyInterpolation.Interpolate;
         ballBody.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-        ballPhysics = obj.AddComponent<AdvancedFootballPhysics>();
+        ballPhysics = obj.GetComponent<AdvancedFootballPhysics>();
+        if (ballPhysics == null) ballPhysics = obj.AddComponent<AdvancedFootballPhysics>();
         ballPhysics.Initialize(ballBody);
         ball = obj.transform;
     }
