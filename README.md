@@ -2,6 +2,8 @@
 
 An original Unity 6 football game prototype for Android, authored by **Yasser Benmaghnia**.
 
+- [Implementation status and remaining work](Docs/IMPLEMENTATION_STATUS.md)
+
 ## Current implemented prototype
 
 - Runtime-generated football pitch, goal frames, match camera, and a three-second red cinematic intro with the creator name in white.
