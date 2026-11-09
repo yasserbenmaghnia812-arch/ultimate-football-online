@@ -42,7 +42,7 @@ Open the repository root as a Unity project. Install Android Build Support, Andr
 
 1. Create or activate a valid Unity license.
 2. In GitHub, open **Settings → Secrets and variables → Actions**.
-3. Add repository secret `UNITY_LICENSE` containing the Unity license file content in the format supported by GameCI.
+3. Add these repository Actions secrets: `UNITY_LICENSE` (contents of your `.ulf` file), `UNITY_EMAIL`, and `UNITY_PASSWORD` (Unity account credentials). Follow the [GameCI Personal License activation guide](https://game.ci/docs/github/activation/) to generate and locate the license file.
 4. Open **Actions → Build Android APK → Run workflow** (or push to `main`).
 5. Download `Ultimate-Football-Android-APK` from a successful run's artifacts.
 
