@@ -7,6 +7,11 @@ using UnityEngine;
 
 public static class FootballBuildScript
 {
+    static FootballBuildScript()
+    {
+        EditorApplication.delayCall += EnsureDefaultScene;
+    }
+
     private const string ScenePath = "Assets/Scenes/Main.unity";
     private const string OutputPath = "build/Android/UltimateFootball.apk";
 
