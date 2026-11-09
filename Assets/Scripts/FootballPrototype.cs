@@ -12,7 +12,8 @@ public sealed class FootballPrototype : MonoBehaviour
     private FootballPlayerAttributes playerAttributes;
     private Camera gameCamera;
     private Vector2 touchMove;
-    private bool shootPressed, passPressed;
+    private bool shootPressed, passPressed, tacklePressed;
+    private FootballMatchRules matchRules;
     private int blueScore, redScore;
     private float matchTime = 180f;
     private float aiThink;
@@ -38,6 +39,10 @@ public sealed class FootballPrototype : MonoBehaviour
         BuildPitch();
         BuildTeams();
         BuildBall();
+        matchRules = gameObject.AddComponent<FootballMatchRules>();
+        matchRules.StartMatch();
+        if (FindObjectOfType<FootballLocalization>() == null)
+            new GameObject("FootballLocalization").AddComponent<FootballLocalization>();
         BuildCamera();
         RenderSettings.ambientLight = new Color(0.72f, 0.76f, 0.8f);
     }
@@ -82,10 +87,11 @@ public sealed class FootballPrototype : MonoBehaviour
         go.GetComponent<Renderer>().sharedMaterial = mat;
         var collider = go.GetComponent<CapsuleCollider>();
         collider.height = 1.8f;
+        var attributes = go.AddComponent<FootballPlayerAttributes>();
         if (controlled)
         {
             player = go.transform;
-            playerAttributes = go.AddComponent<FootballPlayerAttributes>();
+            playerAttributes = attributes;
         }
         return go.transform;
     }
@@ -176,7 +182,9 @@ public sealed class FootballPrototype : MonoBehaviour
         if (input.sqrMagnitude > 0.01f) player.rotation = Quaternion.LookRotation(input);
         if (shootPressed || Input.GetKeyDown(KeyCode.Space)) Kick(10f, 0.16f);
         if (passPressed || Input.GetKeyDown(KeyCode.E)) Kick(5.5f, 0.04f);
-        shootPressed = passPressed = false;
+        if (tacklePressed || Input.GetKeyDown(KeyCode.Q)) Tackle();
+        shootPressed = passPressed = tacklePressed = false;
+        if (matchRules != null) matchRules.Tick(Time.deltaTime);
         UpdateAI();
         matchTime -= Time.deltaTime;
         if (matchTime <= 0) matchTime = 0;
@@ -208,16 +216,22 @@ public sealed class FootballPrototype : MonoBehaviour
         for (int i = 0; i < redTeam.Count; i++)
         {
             Transform bot = redTeam[i];
-            Vector3 target = i == 0 ? new Vector3(0, 1.1f, 18) :
-                Vector3.Lerp(new Vector3(bot.position.x * 0.45f, 1.1f, bot.position.z), ball.position, i % 3 == 0 ? 0.58f : 0.12f);
-            if (i == 0 && ball.position.z > 12) target = new Vector3(ball.position.x * 0.3f, 1.1f, 18);
-            MoveBot(bot, target, i == 0 ? 3.0f : 3.6f);
+            Vector3 home = GetFormationPosition(i, false);
+            FootballRole role = GetRole(i);
+            Vector3 target = FootballTacticalAI.GetRoleTarget(role, i % 2, ball.position, home, false, FootballTeamStyle.Balanced);
+            float pressure = FootballTacticalAI.GetPressingWeight(bot.GetComponent<FootballPlayerAttributes>().stamina, 1f);
+            target = Vector3.Lerp(target, ball.position, role == FootballRole.Midfielder ? 0.10f * pressure : 0.035f * pressure);
+            MoveBot(bot, target, role == FootballRole.Goalkeeper ? 3.0f : 3.6f);
         }
         for (int i = 0; i < blueTeam.Count; i++)
         {
             Transform bot = blueTeam[i];
             if (bot == player) continue;
-            Vector3 target = Vector3.Lerp(new Vector3(bot.position.x * 0.55f, 1.1f, bot.position.z), ball.position, i % 4 == 0 ? 0.42f : 0.08f);
+            FootballRole role = GetRole(i);
+            Vector3 home = GetFormationPosition(i, true);
+            Vector3 target = FootballTacticalAI.GetRoleTarget(role, i % 2, ball.position, home, true, FootballTeamStyle.Balanced);
+            float pressure = FootballTacticalAI.GetPressingWeight(bot.GetComponent<FootballPlayerAttributes>().stamina, 1f);
+            target = Vector3.Lerp(target, ball.position, role == FootballRole.Midfielder ? 0.12f * pressure : 0.04f * pressure);
             MoveBot(bot, target, 3.1f);
         }
     }
@@ -228,7 +242,13 @@ public sealed class FootballPrototype : MonoBehaviour
         delta.y = 0;
         if (delta.magnitude > 0.25f)
         {
-            Vector3 step = delta.normalized * speed * 0.06f;
+            FootballPlayerAttributes attributes = bot.GetComponent<FootballPlayerAttributes>();
+            if (attributes != null)
+            {
+                attributes.TickMovement(true, Time.deltaTime);
+                speed *= attributes.MovementMultiplier();
+            }
+            Vector3 step = delta.normalized * speed * Time.deltaTime;
             bot.position += Vector3.ClampMagnitude(step, delta.magnitude);
             bot.rotation = Quaternion.LookRotation(delta.normalized);
         }
@@ -239,10 +259,53 @@ public sealed class FootballPrototype : MonoBehaviour
         }
     }
 
+    private FootballRole GetRole(int index)
+    {
+        if (index == 0) return FootballRole.Goalkeeper;
+        if (index <= 4) return FootballRole.Defender;
+        if (index <= 8) return FootballRole.Midfielder;
+        return FootballRole.Striker;
+    }
+
+    private Vector3 GetFormationPosition(int index, bool blue)
+    {
+        float sign = blue ? -1f : 1f;
+        if (index == 0) return new Vector3(0, 1.1f, sign * 18f);
+        if (index <= 4)
+        {
+            float[] x = { -10f, -3f, 3f, 10f };
+            return new Vector3(x[index - 1], 1.1f, sign * 12f);
+        }
+        if (index <= 8)
+        {
+            float[] x = { -9f, -3f, 3f, 9f };
+            return new Vector3(x[index - 5], 1.1f, sign * 5f);
+        }
+        return new Vector3(index == 9 ? -4f : 4f, 1.1f, sign * 1f);
+    }
+
+    private void Tackle()
+    {
+        if (player == null || ballBody == null) return;
+        if (playerAttributes != null && playerAttributes.stamina < 4f) return;
+        Transform nearest = null;
+        float nearestDistance = 2.2f;
+        for (int i = 0; i < redTeam.Count; i++)
+        {
+            float distance = Vector3.Distance(player.position, redTeam[i].position);
+            if (distance < nearestDistance) { nearestDistance = distance; nearest = redTeam[i]; }
+        }
+        if (nearest == null || Vector3.Distance(player.position, ball.position) > 2.8f) return;
+        Vector3 away = ball.position - nearest.position;
+        away.y = 0.08f;
+        if (ballPhysics != null) ballPhysics.Kick(away.normalized, 6.5f, 0.08f, Vector3.zero);
+        if (playerAttributes != null) playerAttributes.stamina = Mathf.Max(0f, playerAttributes.stamina - 3.5f);
+    }
+
     private void CheckGoal()
     {
-        if (ball.position.z > 21.4f && Mathf.Abs(ball.position.x) < 3.1f) { redScore++; ResetKickoff(); }
-        else if (ball.position.z < -21.4f && Mathf.Abs(ball.position.x) < 3.1f) { blueScore++; ResetKickoff(); }
+        if (ball.position.z > 21.4f && Mathf.Abs(ball.position.x) < 3.1f) { redScore++; if (matchRules != null) matchRules.AddGoal(false); ResetKickoff(); }
+        else if (ball.position.z < -21.4f && Mathf.Abs(ball.position.x) < 3.1f) { blueScore++; if (matchRules != null) matchRules.AddGoal(true); ResetKickoff(); }
     }
 
     private void ResetKickoff()
@@ -279,6 +342,7 @@ public sealed class FootballPrototype : MonoBehaviour
         if (GUI.RepeatButton(new Rect(x + w, y + h, w, h), "↓", buttonStyle)) touchMove.y = -1;
         if (GUI.Button(new Rect(Screen.width - 104, Screen.height - 84, 88, 64), "SHOOT", buttonStyle)) shootPressed = true;
         if (GUI.Button(new Rect(Screen.width - 104, Screen.height - 158, 88, 60), "PASS", buttonStyle)) passPressed = true;
+        if (GUI.Button(new Rect(Screen.width - 104, Screen.height - 232, 88, 60), "TACKLE", buttonStyle)) tacklePressed = true;
         GUI.color = Color.white;
         GUI.backgroundColor = Color.white;
     }
