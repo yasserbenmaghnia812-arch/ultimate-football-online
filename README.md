@@ -4,7 +4,10 @@ An original mobile football game project using Unity 6, targeting Android.
 
 ## Current prototype implementation
 - Three-second dark-red cinematic intro with **Yasser Benmaghnia** centered in white, an animated reveal line, and automatic transition to gameplay.
-- Generated 3D pitch, goals, ball physics (Rigidbody), and follow camera.
+- Generated 3D pitch, goals, Rigidbody ball with a dedicated aerodynamic/spin/rolling-resistance component, and follow camera.
+- Ball scale and ground start height corrected to approximately 0.22 m diameter and pitch contact height.
+- Initial player rating and stamina model affects controlled-player movement and kick power/accuracy.
+- Research and implementation roadmap in `Docs/RESEARCH_AND_ROADMAP.md`.
 - Prototype 11-player teams on both sides (22 simple capsule players), with basic formation movement and lightweight CPU behaviours.
 - Mobile touch controls: movement, pass, and shoot; keyboard controls remain available in the Editor.
 - Basic score, match countdown, goal detection, and kickoff reset.
@@ -32,7 +35,7 @@ The workflow has not yet been verified by a successful Unity build. A valid Unit
 | Hosting | Free tiers where practical |
 
 ## Roadmap (not yet complete)
-1. Replace capsule placeholders with rigged football characters, animations, goalkeeper logic, player switching, and proper collision/ball control.
+1. Replace capsule placeholders with rigged football characters, animations, goalkeeper logic, player switching, and physical contact/tackle recovery.
 2. Improve AI tactics, passing lanes, fouls, offside, throw-ins, corners, penalties, substitutions, and full match rules.
 3. Add a localized Arabic RTL / French / English menu and settings.
 4. Add online multiplayer with authoritative server simulation, room codes, invites, reconnect, and anti-cheat.
