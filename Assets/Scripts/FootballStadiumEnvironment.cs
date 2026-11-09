@@ -21,6 +21,7 @@ public sealed class FootballStadiumEnvironment : MonoBehaviour
         if (crowdMesh != null) return;
         crowdMesh = BuildCubeMesh();
         crowdMaterial = MakeMaterial(new Color(0.82f, 0.84f, 0.88f));
+        crowdMaterial.enableInstancing = true;
         standMaterial = MakeMaterial(new Color(0.12f, 0.14f, 0.19f));
         BuildStand(-1f);
         BuildStand(1f);
