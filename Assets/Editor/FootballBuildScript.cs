@@ -4,7 +4,6 @@ using UnityEditor;
 using UnityEditor.Build.Reporting;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public static class FootballBuildScript
 {
@@ -44,10 +43,7 @@ public static class FootballBuildScript
         if (!File.Exists(ScenePath))
         {
             Scene scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            var bootstrap = new GameObject("UltimateFootballRuntimeBootstrap");
-            bootstrap.AddComponent<RuntimeSceneMarker>();
             EditorSceneManager.SaveScene(scene, ScenePath);
-            Object.DestroyImmediate(bootstrap);
         }
 
         EditorBuildSettings.scenes = new[]
@@ -56,6 +52,4 @@ public static class FootballBuildScript
         };
     }
 }
-
-public sealed class RuntimeSceneMarker : MonoBehaviour { }
 #endif
