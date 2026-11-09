@@ -30,16 +30,39 @@ public sealed class FootballOnlineRooms : MonoBehaviour
 
     private void EnsureNetworkManager()
     {
-        if (NetworkManager.Singleton != null) return;
-        GameObject networkObject = new GameObject("FootballNetworkManager");
-        UnityTransport transport = networkObject.AddComponent<UnityTransport>();
-        NetworkManager manager = networkObject.AddComponent<NetworkManager>();
-        manager.NetworkConfig = new NetworkConfig
+        NetworkManager manager = NetworkManager.Singleton;
+        if (manager == null)
         {
-            NetworkTransport = transport,
-            EnableSceneManagement = false
-        };
-        DontDestroyOnLoad(networkObject);
+            GameObject networkObject = new GameObject("FootballNetworkManager");
+            UnityTransport transport = networkObject.AddComponent<UnityTransport>();
+            manager = networkObject.AddComponent<NetworkManager>();
+            manager.NetworkConfig = new NetworkConfig
+            {
+                NetworkTransport = transport,
+                EnableSceneManagement = false
+            };
+            DontDestroyOnLoad(networkObject);
+        }
+
+        // All clients must load/register the exact same prefabs before joining a session.
+        RegisterNetworkPrefab(manager, "Footballers/BluePlayer");
+        RegisterNetworkPrefab(manager, "Footballers/RedPlayer");
+        RegisterNetworkPrefab(manager, "Footballers/NetworkBall");
+    }
+
+    private static void RegisterNetworkPrefab(NetworkManager manager, string resourcePath)
+    {
+        GameObject prefab = Resources.Load<GameObject>(resourcePath);
+        if (prefab == null) return;
+        try
+        {
+            if (!manager.NetworkConfig.Prefabs.Contains(prefab))
+                manager.AddNetworkPrefab(prefab);
+        }
+        catch (Exception exception)
+        {
+            Debug.LogError("Could not register network prefab " + resourcePath + ": " + exception.Message);
+        }
     }
 
     private async Task EnsureServices()
