@@ -14,6 +14,16 @@ This file distinguishes code foundations from features that have been imported, 
 - Procedural stands, crowd silhouettes, floodlight objects, advertising boards and synthesized ambient crowd audio. These are lightweight placeholders, not a production stadium.
 - Three-second red intro and Android build configuration.
 
+## Verification notes — 9 November 2026
+
+A repository-level source review found and corrected these integration defects:
+- Offside was counted twice; the duplicate increment in the player controller was removed because the referee already records it.
+- Issuing a card emitted a whistle at world origin, which could move the ball to the center through the current whistle listener; cards now use a separate discipline event.
+- Successful local tackles now increment the home team's tackle counter.
+- Goals are now counted in match statistics as well as the match score.
+
+These are source-level corrections only. They have not been compiled or play-tested in Unity.
+
 ## Not complete
 
 - Professional footballer models, realistic football kits, face/body customization, skeleton rigs, motion-captured football animation, ball-contact IK, goalkeeper dive/save animations, headers and celebrations.
