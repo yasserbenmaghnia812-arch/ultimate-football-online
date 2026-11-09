@@ -1,0 +1,172 @@
+name: Replace Unity prototype with UE 5.8 project
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/sync-upstream.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ue58-project-replacement
+  cancel-in-progress: false
+
+jobs:
+  replace-project:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          lfs: false
+
+      - name: Preserve this workflow and clone the Unreal source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/preserved-workflow
+          cp .github/workflows/sync-upstream.yml /tmp/preserved-workflow/
+          git clone https://github.com/grain-by-grain/ascertainty-fc.git /tmp/ue-project
+          git -C /tmp/ue-project lfs install
+          git -C /tmp/ue-project lfs fetch origin main
+          git -C /tmp/ue-project lfs checkout
+
+      - name: Copy upstream Git LFS assets into this repository
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TARGET_REPOSITORY: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git -C /tmp/ue-project remote add target "https://x-access-token:${GH_TOKEN}@github.com/${TARGET_REPOSITORY}.git"
+          git -C /tmp/ue-project lfs push --all target
+
+      - name: Replace repository files and apply project identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          rsync -a --delete --exclude='.git' /tmp/ue-project/ ./
+          mkdir -p .github/workflows
+          cp /tmp/preserved-workflow/sync-upstream.yml .github/workflows/sync-upstream.yml
+          cp README.md UPSTREAM_README.md
+          cat > README.md <<'EOF'
+          # Ultimate Football Online
+
+          **An original football game project by Yasser Benmaghnia.**  
+          Engine: **Unreal Engine 5.8** · Foundation: [Ascertainty FC](https://github.com/grain-by-grain/ascertainty-fc)
+
+          This repository replaces the previous Unity prototype with the Unreal Engine 5.8 Blueprint project. It retains the upstream project files and licensing notices. Planned features are not represented as completed until implemented and tested.
+
+          ## Included gameplay foundation
+          - Playable football match prototype
+          - Player movement, sprint and stamina HUD
+          - Ball control, charged shooting and passing
+          - AI teammates and opponents
+          - Match map and minimap
+          - Blueprint-only project; no C++ compile step
+
+          ## Project identity and target
+          - Game title: **Ultimate Football Online**
+          - Creator credit: **Yasser Benmaghnia**
+          - Planned intro: red cinematic screen, centered white game title for 3 seconds, then main menu
+          - Target: Android APK, pending Android toolchain configuration and physical-device testing
+
+          ## Open in Unreal Engine
+          1. Install Unreal Engine **5.8**.
+          2. Install Git and Git LFS; run `git lfs install`.
+          3. Clone this repository.
+          4. Run `git lfs pull` to retrieve the binary assets now stored in this repository's LFS storage.
+          5. Open `Football.uproject` and press Play.
+
+          ## Android status
+          Android packaging is not yet verified. Configure the UE 5.8 Android SDK, NDK and JDK toolchain, package the project, and test the APK on a physical Android device.
+
+          ## Roadmap
+          See [Docs/BRANDING_AND_FEATURE_ROADMAP.md](Docs/BRANDING_AND_FEATURE_ROADMAP.md).
+
+          ## Credits and licensing
+          Based on **Ascertainty FC** by Grain by Grain. The original README is preserved as [UPSTREAM_README.md](UPSTREAM_README.md). Preserve [LICENSE](LICENSE) and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+          - Original Ascertainty FC content is identified by the upstream project as MIT-licensed.
+          - Some redistributed Unreal template content is governed by the Unreal Engine EULA, not MIT.
+          - Third-party Fab assets are not included and remain under their own licenses.
+          - Do not add unlicensed club marks, player likenesses, commentary recordings, music or other third-party assets.
+          EOF
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path("Football.uproject")
+          data = json.loads(p.read_text(encoding="utf-8"))
+          data["Description"] = "Ultimate Football Online — an original football game by Yasser Benmaghnia"
+          data["Category"] = "Games"
+          p.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+          PY
+          mkdir -p Docs
+          cat > Docs/BRANDING_AND_FEATURE_ROADMAP.md <<'EOF'
+          # Branding and Feature Roadmap
+
+          Owner / in-game credit: **Yasser Benmaghnia**  
+          Engine baseline: **Unreal Engine 5.8**  
+          Target: Android APK
+
+          ## Status discipline
+          This is a plan, not a claim that every feature is implemented. Verify each item in Unreal Editor and on target hardware before marking it complete.
+
+          ## Stage 0 — project baseline
+          - [x] Replace the Unity prototype tree with the UE 5.8 Blueprint project.
+          - [x] Preserve upstream README and license notices.
+          - [x] Transfer upstream Git LFS objects into this repository's LFS storage.
+          - [ ] Clone, run `git lfs pull`, open Football.uproject and test the match map.
+
+          ## Stage 1 — identity and opening
+          - [ ] Set the product/game display name to Ultimate Football Online.
+          - [ ] Create a red full-screen opening sequence.
+          - [ ] Display the white title centered for exactly 3 seconds.
+          - [ ] Show “Yasser Benmaghnia” as creator credit.
+          - [ ] Transition to the main menu and verify mobile safe areas.
+
+          ## Stage 2 — core gameplay
+          - [ ] Audit movement, acceleration, collisions and animation blending.
+          - [ ] Tune ball mass, friction, restitution and rolling resistance.
+          - [ ] Implement charged shot power, loft and spin/curl.
+          - [ ] Add pass targeting and ball trapping.
+          - [ ] Add stamina drain/recovery and fatigue effects.
+          - [ ] Add player attributes and role-aware tactical AI.
+
+          ## Stage 3 — match rules and presentation
+          - [ ] Implement fouls, advantage, free kicks and penalties.
+          - [ ] Implement yellow/red cards and second-yellow dismissal.
+          - [ ] Add substitutions, match clock, score and event statistics.
+          - [ ] Add Arabic RTL and English localization.
+          - [ ] Use only licensed or original models, animations, music and commentary.
+
+          ## Stage 4 — teams and online
+          - [ ] Build team selection, formations and squad management.
+          - [ ] Validate a full 22-player local match.
+          - [ ] Design authoritative server simulation before competitive online play.
+          - [ ] Add lobbies, invites, reconnect handling and match-result validation.
+          - [ ] Load-test network traffic and server costs.
+
+          ## Stage 5 — Android and release
+          - [ ] Configure UE 5.8 Android SDK/NDK/JDK.
+          - [ ] Create low/medium/high scalability profiles.
+          - [ ] Profile memory, thermals and frame time on target Android hardware.
+          - [ ] Test touch controls, UI scaling, suspend/resume and network changes.
+          - [ ] Produce a signed APK and verify installation and gameplay on a physical device.
+
+          ## Build constraint
+          GitHub Actions can package the project only with a compatible Unreal Engine 5.8 build environment and valid Epic/Unreal build access. No licensing bypass is used.
+          EOF
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No repository changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Replace Unity prototype with UE 5.8 football project"
+          git push --force-with-lease origin HEAD:main
