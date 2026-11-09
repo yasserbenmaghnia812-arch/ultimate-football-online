@@ -14,6 +14,9 @@ public sealed class FootballPrototype : MonoBehaviour
     private Vector2 touchMove;
     private bool shootPressed, passPressed, tacklePressed, switchPressed, sprintPressed;
     private FootballMatchRules matchRules;
+    private FootballMatchStatistics matchStatistics;
+    private FootballCareerProfile careerProfile;
+    private bool careerResultSaved;
     private int blueScore, redScore;
     private float matchTime = 180f;
     private float aiThink;
@@ -40,6 +43,9 @@ public sealed class FootballPrototype : MonoBehaviour
         BuildTeams();
         BuildBall();
         matchRules = gameObject.AddComponent<FootballMatchRules>();
+        matchStatistics = gameObject.AddComponent<FootballMatchStatistics>();
+        careerProfile = FootballCareerSaveSystem.Load();
+        matchRules.StateChanged += OnMatchStateChanged;
         matchRules.StartMatch();
         if (FindObjectOfType<FootballLocalization>() == null)
             new GameObject("FootballLocalization").AddComponent<FootballLocalization>();
@@ -171,6 +177,7 @@ public sealed class FootballPrototype : MonoBehaviour
     private void Update()
     {
         if (player == null || ball == null) return;
+        if (matchRules != null && (matchRules.State == FootballMatchState.FullTime || matchRules.State == FootballMatchState.Paused)) return;
         if (switchPressed || Input.GetKeyDown(KeyCode.Tab)) SwitchControlledPlayer();
         sprintPressed = sprintPressed || Input.GetKey(KeyCode.LeftShift);
         Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
@@ -211,6 +218,11 @@ public sealed class FootballPrototype : MonoBehaviour
     private void Kick(float power, float lift)
     {
         if (Vector3.Distance(player.position, ball.position) > 2.25f) return;
+        if (matchStatistics != null)
+        {
+            if (power >= 9f) matchStatistics.RegisterShot(true, false);
+            else matchStatistics.RegisterPass(true, true);
+        }
         Vector3 direction = player.forward.sqrMagnitude > 0.1f ? player.forward : Vector3.forward;
         float baseSpeed = power >= 9f ? 22f : 13f;
         float shotSpeed = playerAttributes != null ? playerAttributes.GetKickSpeed(baseSpeed) : baseSpeed;
@@ -364,6 +376,15 @@ public sealed class FootballPrototype : MonoBehaviour
         away.y = 0.08f;
         if (ballPhysics != null) ballPhysics.Kick(away.normalized, 6.5f, 0.08f, Vector3.zero);
         if (playerAttributes != null) playerAttributes.stamina = Mathf.Max(0f, playerAttributes.stamina - 3.5f);
+    }
+
+    private void OnMatchStateChanged(FootballMatchState state)
+    {
+        if (state != FootballMatchState.FullTime || careerResultSaved) return;
+        careerResultSaved = true;
+        if (careerProfile == null) careerProfile = FootballCareerSaveSystem.Load();
+        careerProfile.RecordMatch(blueScore, redScore, blueScore > redScore ? 120 : blueScore == redScore ? 60 : 30);
+        FootballCareerSaveSystem.Save(careerProfile);
     }
 
     private void CheckGoal()
