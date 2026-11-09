@@ -11,7 +11,7 @@ This is a plan, not a claim that every feature is implemented. Verify each item 
 - [x] Replace the Unity prototype tree with the UE 5.8 Blueprint project.
 - [x] Preserve upstream README and license notices.
 - [x] Transfer upstream Git LFS objects into this repository's LFS storage.
-- [ ] Clone, run `git lfs pull`, open Football.uproject and test the match map.
+- [ ] Clone, run `git lfs pull`, compile the native Football module, and test both reveal and match maps.
 
 ## Stage 1 — identity and opening
 - [x] Set the product/game display name to Ultimate Football Online.
@@ -43,7 +43,8 @@ This is a plan, not a claim that every feature is implemented. Verify each item 
 - [ ] Load-test network traffic and server costs.
 
 ## Stage 5 — Android and release
-- [ ] Configure UE 5.8 Android SDK/NDK/JDK.
+- [x] Add Android package name, landscape orientation and ARM64 baseline settings.
+- [ ] Configure and validate UE 5.8 Android SDK/NDK/JDK.
 - [ ] Create low/medium/high scalability profiles.
 - [ ] Profile memory, thermals and frame time on target Android hardware.
 - [ ] Test touch controls, UI scaling, suspend/resume and network changes.
