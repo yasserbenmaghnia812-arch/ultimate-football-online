@@ -19,7 +19,7 @@ void UUltimateFootballGameInstance::Shutdown()
 
 void UUltimateFootballGameInstance::HandlePostLoadMap(UWorld* LoadedWorld)
 {
-    if (bSplashShown || !LoadedWorld || LoadedWorld->WorldType != EWorldType::Game)
+    if (bSplashShown || !LoadedWorld || (LoadedWorld->WorldType != EWorldType::Game && LoadedWorld->WorldType != EWorldType::PIE))
     {
         return;
     }
