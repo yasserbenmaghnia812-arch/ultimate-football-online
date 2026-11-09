@@ -11,7 +11,7 @@ This repository replaces the previous Unity prototype with the Unreal Engine 5.8
 - Ball control, charged shooting and passing
 - AI teammates and opponents
 - Match map and minimap
-- Blueprint-only project; no C++ compile step
+- Native C++ runtime module plus existing Blueprint gameplay assets
 
 ## Project identity and target
 - Game title: **Ultimate Football Online**
@@ -27,7 +27,7 @@ This repository replaces the previous Unity prototype with the Unreal Engine 5.8
 5. Open `Football.uproject` and press Play.
 
 ## Android status
-Android packaging is not yet verified. Configure the UE 5.8 Android SDK, NDK and JDK toolchain, package the project, and test the APK on a physical Android device.
+Android package identity, landscape orientation, and an ARM64 baseline are configured. Android packaging is not yet verified: configure the UE 5.8 Android SDK, NDK and JDK toolchain, package the project, and test the APK on a physical Android device.
 
 ## Roadmap
 See [Docs/BRANDING_AND_FEATURE_ROADMAP.md](Docs/BRANDING_AND_FEATURE_ROADMAP.md).
