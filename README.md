@@ -3,7 +3,7 @@
 **An original football game project by Yasser Benmaghnia.**  
 Engine: **Unreal Engine 5.8** · Foundation: [Ascertainty FC](https://github.com/grain-by-grain/ascertainty-fc)
 
-This repository replaces the previous Unity prototype with the Unreal Engine 5.8 Blueprint project. It retains the upstream project files and licensing notices. Planned features are not represented as completed until implemented and tested.
+This repository replaces the previous Unity prototype with an Unreal Engine 5.8 project combining native C++ runtime code and the upstream Blueprint gameplay assets. It retains the upstream project files and licensing notices. Planned features are not represented as completed until implemented and tested.
 
 ## Included gameplay foundation
 - Playable football match prototype
@@ -24,7 +24,10 @@ This repository replaces the previous Unity prototype with the Unreal Engine 5.8
 2. Install Git and Git LFS; run `git lfs install`.
 3. Clone this repository.
 4. Run `git lfs pull` to retrieve the binary assets now stored in this repository's LFS storage.
-5. Open `Football.uproject` and press Play.
+5. Generate IDE project files if prompted, build the `FootballEditor` target for UE 5.8, then open `Football.uproject` and press Play.
+
+## Opening splash implementation
+The native `Football` GameInstance displays a full-screen red UMG splash with the centered white title **ULTIMATE FOOTBALL ONLINE** and the creator credit **Yasser Benmaghnia**. A 3-second timer removes the splash and reveals the startup map. The implementation is committed; compile and in-engine runtime verification are still required.
 
 ## Android status
 Android package identity, landscape orientation, and an ARM64 baseline are configured. Android packaging is not yet verified: configure the UE 5.8 Android SDK, NDK and JDK toolchain, package the project, and test the APK on a physical Android device.
