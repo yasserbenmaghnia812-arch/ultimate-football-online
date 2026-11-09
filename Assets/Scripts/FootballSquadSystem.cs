@@ -33,6 +33,31 @@ public sealed class FootballSquadSystem : MonoBehaviour
     public int SubstitutionsRemaining => substitutionsRemaining;
     public string ActiveFormation => activeFormation;
 
+    public void InitializeDefaultRoster()
+    {
+        squad.Clear();
+        startingEleven.Clear();
+        string[] names = { "Yasser GK", "Atlas CB", "Sahara CB", "Nour RB", "Amine LB", "Rayan CM", "Ilyes CM", "Adel CAM", "Samir RW", "Karim ST", "Malik LW", "Walid GK", "Nassim CB", "Fares CB", "Bilal RB", "Anis CM", "Hicham ST", "Tarek LW" };
+        string[] positions = { "GK", "CB", "CB", "RB", "LB", "CM", "CM", "CAM", "RW", "ST", "LW", "GK", "CB", "CB", "RB", "CM", "ST", "LW" };
+        for (int i = 0; i < names.Length; i++)
+        {
+            squad.Add(new FootballSquadMember {
+                id = "DZ-" + (i + 1).ToString("00"),
+                displayName = names[i],
+                position = positions[i],
+                overall = Mathf.Clamp(84 - (i % 7) * 3, 62, 92),
+                fitness = 100,
+                isAvailable = true
+            });
+        }
+        List<string> starters = new List<string>();
+        for (int i = 0; i < 11; i++) starters.Add(squad[i].id);
+        SetStartingEleven(starters);
+        ResetMatchSubstitutions(5);
+    }
+
+    public FootballSquadMember GetMember(string memberId) { return Find(memberId); }
+
     public bool SetStartingEleven(IList<string> memberIds)
     {
         if (memberIds == null || memberIds.Count != 11) return false;
