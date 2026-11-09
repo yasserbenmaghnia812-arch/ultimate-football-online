@@ -2,7 +2,7 @@
   "FileVersion": 3,
   "EngineAssociation": "5.8",
   "Category": "Games",
-  "Description": "Ultimate Football Online \u2014 an original football game by Yasser Benmaghnia",
+  "Description": "Ultimate Football Online — an original football game by Yasser Benmaghnia",
   "Plugins": [
     {
       "Name": "ModelingToolsEditorMode",
@@ -22,6 +22,13 @@
     {
       "Name": "AndroidFileServer",
       "Enabled": false
+    }
+  ],
+  "Modules": [
+    {
+      "Name": "Football",
+      "Type": "Runtime",
+      "LoadingPhase": "Default"
     }
   ]
 }
