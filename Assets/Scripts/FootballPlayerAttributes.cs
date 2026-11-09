@@ -45,6 +45,8 @@ public sealed class FootballPlayerAttributes : MonoBehaviour
     public float GetShotAccuracy()
     {
         float fatigue = 1f - stamina / 100f;
-        return Mathf.Clamp01((finishing / 99f) * (balance / 99f) * (1f - fatigue * 0.28f));
+        float finishingFactor = Mathf.Lerp(0.65f, 1f, finishing / 99f);
+        float balanceFactor = Mathf.Lerp(0.80f, 1f, balance / 99f);
+        return Mathf.Clamp01(finishingFactor * balanceFactor * (1f - fatigue * 0.28f));
     }
 }
