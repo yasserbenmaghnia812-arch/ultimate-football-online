@@ -60,7 +60,7 @@ Workflow: [Build Android APK](.github/workflows/build-android.yml). A downloadab
 - Unity physics documentation: Rigidbody collision detection and performance trade-offs.
 - Open-source Unity football projects are listed in the research document. Their licenses and asset terms must be checked before any code or asset reuse.
 
-See [Docs/RESEARCH_AND_ROADMAP.md](Docs/RESEARCH_AND_ROADMAP.md).
+Cloud Android build setup: [Docs/UNITY_CLOUD_BUILD_SETUP.md](Docs/UNITY_CLOUD_BUILD_SETUP.md). Research and roadmap: [Docs/RESEARCH_AND_ROADMAP.md](Docs/RESEARCH_AND_ROADMAP.md).
 
 ## Not yet complete — important
 
