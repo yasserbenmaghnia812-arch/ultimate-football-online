@@ -42,6 +42,7 @@ public sealed class FootballPrototype : MonoBehaviour
         whiteMat = Mat(Color.white);
         grassMat = Mat(new Color(0.10f, 0.38f, 0.16f));
         BuildPitch();
+        gameObject.AddComponent<FootballStadiumEnvironment>().Build();
         BuildTeams();
         BuildBall();
         matchRules = gameObject.AddComponent<FootballMatchRules>();
