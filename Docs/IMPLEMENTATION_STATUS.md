@@ -6,7 +6,7 @@ This file distinguishes code foundations from features that have been imported, 
 
 - Runtime-generated pitch, goals, 22-player prototype, ball physics, basic AI movement, mobile touch controls and follow camera.
 - Procedural player silhouettes and simple limb swing; these are placeholders, not professional rigged footballers.
-- Animator bridge for future licensed humanoid prefabs. It reads Speed and IsSprinting and supports Kick, Tackle and Celebrate triggers, but no rigged character or animation controller is imported yet.
+- Animator bridge for future licensed humanoid prefabs; runtime loading now checks `Resources/Footballers/BluePlayer` and `Resources/Footballers/RedPlayer`, falling back to procedural silhouettes when absent. See `CHARACTER_IMPORT_PIPELINE.md`. It reads Speed and IsSprinting and supports Kick, Tackle and Celebrate triggers, but no rigged character or animation controller is imported yet.
 - Tactical role positioning, player attributes, stamina, local career save, squad/card data foundations, localization and Android quality settings.
 - Offside decision called when the controlled player passes; the defender line includes the goalkeeper. The geometry still does not cover all IFAB exceptions or AI-team passes.
 - Referee foundation for foul registration, direct free-kick/penalty classification, restart notifications, reckless-challenge/DOGSO card inputs, per-player yellow-card tracking and second-yellow dismissal. Contact detection and restart gameplay are not fully integrated.
@@ -31,7 +31,7 @@ These are source-level corrections only. They have not been compiled or play-tes
 - Complete event-based statistics with verified pass completion, shots on target, saves, interceptions, clearances and player-level match ratings.
 - Finished main menu, team selection, roster editor, player-card collection/progression screens, tactics, settings and controller remapping.
 - Online services integration: authentication, matchmaking, lobbies, invites, authoritative server simulation, synchronization, reconnects, anti-cheat and 22-player 11v11.
-- Actual Unity asset imports, successful Unity Editor compile, automated play-mode tests, Android package build, install test or device performance measurements.
+- Actual Unity asset imports (the new loader is only a hookup), successful Unity Editor compile, automated play-mode tests, Android package build, install test or device performance measurements.
 
 ## Build status
 
