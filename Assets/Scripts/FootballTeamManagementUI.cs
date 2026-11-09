@@ -9,6 +9,9 @@ public sealed class FootballTeamManagementUI : MonoBehaviour
     private readonly Dictionary<string, FootballPlayerCard> cards = new Dictionary<string, FootballPlayerCard>();
     private bool visible;
     private int tab;
+    private string selectedOutgoing = "";
+    private string selectedIncoming = "";
+    private string substitutionMessage = "";
     private Rect panel = new Rect(20, 60, 540, 590);
     private GUIStyle label;
 
@@ -64,14 +67,28 @@ public sealed class FootballTeamManagementUI : MonoBehaviour
         if (GUILayout.Button("4-2-3-1")) squad.SetFormation("4-2-3-1");
         if (GUILayout.Button("3-5-2")) squad.SetFormation("3-5-2");
         GUILayout.EndHorizontal();
+        GUILayout.Label("Outgoing: " + selectedOutgoing + "   Incoming: " + selectedIncoming, label);
+        if (!string.IsNullOrEmpty(selectedOutgoing) && !string.IsNullOrEmpty(selectedIncoming))
+        {
+            if (GUILayout.Button("CONFIRM SUBSTITUTION", GUILayout.Height(36)))
+            {
+                bool success = squad.Substitute(selectedOutgoing, selectedIncoming);
+                substitutionMessage = success ? "Substitution recorded in squad roster." : "Substitution rejected.";
+                selectedOutgoing = "";
+                selectedIncoming = "";
+            }
+        }
+        if (!string.IsNullOrEmpty(substitutionMessage)) GUILayout.Label(substitutionMessage, label);
         foreach (FootballSquadMember member in squad.Squad)
         {
             bool starter = squad.StartingEleven.Contains(member.id);
             GUILayout.BeginHorizontal("box");
-            GUILayout.Label((starter ? "XI  " : "BENCH ") + member.displayName + " | " + member.position + " | " + member.overall, label);
+            GUILayout.Label((starter ? "XI  " : "BENCH ") + member.displayName + " | " + member.position + " | " + member.overall, label, GUILayout.Width(350));
+            if (starter && GUILayout.Button("OUT", GUILayout.Width(65))) selectedOutgoing = member.id;
+            else if (!starter && member.isAvailable && GUILayout.Button("IN", GUILayout.Width(65))) selectedIncoming = member.id;
             GUILayout.EndHorizontal();
         }
-        GUILayout.Label("Roster data is fictional prototype content.", label);
+        GUILayout.Label("Substitutions update the roster model; live on-pitch player replacement is not yet wired.", label);
     }
 
     private void DrawCards()
