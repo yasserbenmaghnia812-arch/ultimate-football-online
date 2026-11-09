@@ -1,4 +1,5 @@
 - [Licensed humanoid footballer import pipeline](Docs/CHARACTER_IMPORT_PIPELINE.md)
+- [FBX import, football animation and 22-player test gates](Docs/ASSET_IMPORT_AND_22_PLAYER_TEST.md)
 - [Free assets, licensing and feature integration roadmap](Docs/FREE_ASSETS_AND_FEATURE_ROADMAP.md)
 # Ultimate Football Online
 
@@ -34,6 +35,8 @@ An original Unity 6 football game prototype for Android, authored by **Yasser Be
 - `Assets/Scripts/FootballOffsideDetector.cs` — geometric offside-position helper (not yet wired to a referee/pass event pipeline).
 - `Assets/Scripts/FootballSquadSystem.cs` — roster validation, formation selection, and substitution bookkeeping.
 - `Assets/Scripts/FootballMatchStatistics.cs` — shots, passing, tackles, fouls, corners, offsides, and possession counters.
+- `Assets/Scripts/FootballNetworkMatchState.cs` — server-owned replicated score, clock, phase and match-event state (not full player/ball synchronization).
+- `Assets/Editor/FootballModelImportPipeline.cs` — configures licensed FBX imports as Humanoid and creates a Resources player prefab from a model already added to the project.
 - `Assets/Scripts/FootballRuntimeQuality.cs` — Android-oriented low/balanced/high quality presets.
 - `Assets/Editor/FootballBuildScript.cs` — creates a minimal runtime scene and builds Android APK.
 - `Docs/RESEARCH_AND_ROADMAP.md` — design research, source links, implementation decisions, and staged roadmap.
@@ -79,6 +82,12 @@ This repository is now a more complete prototype scaffold, **not** a finished FI
 - Device profiling, QA, store signing, and verified APK output. The current GitHub Actions runs stop before Unity compilation because Unity Personal license secrets are not configured.
 
 All shipped code, models, animation, audio, club marks, kits, player identities, and UI must be original or appropriately licensed. Commercial games are gameplay-design references only; no proprietary EA/Konami code or assets are included.
+
+## New implementation work (not yet Unity-tested)
+
+- Added an Editor FBX import pipeline. No FBX binary model or football animation pack has been imported into this repository yet; a licensed source asset must first be placed in `Assets/ThirdParty/Footballers/` in Unity.
+- Added an NGO server-authoritative match-state component for score, clock, phase and event text. Player transforms, ball physics, possession, referee decisions and the match simulation are not yet replicated, so online 11v11 is not playable.
+- Added an explicit asset-import and 22-client test checklist. No 22-client test has been run.
 
 ## Current implementation guides
 
