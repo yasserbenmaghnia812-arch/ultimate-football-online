@@ -15,9 +15,9 @@ This is a plan, not a claim that every feature is implemented. Verify each item 
 
 ## Stage 1 — identity and opening
 - [x] Set the product/game display name to Ultimate Football Online.
-- [ ] Create a red full-screen opening sequence (requires editing the existing Unreal Widget/Level assets).
-- [ ] Display the white title centered for exactly 3 seconds (not yet verified or implemented in the binary Widget asset).
-- [ ] Show “Yasser Benmaghnia” as creator credit in the opening widget (not yet verified in-editor).
+- [x] Add a native UMG red full-screen opening splash in C++ (runtime verification pending).
+- [x] Add a centered white title with a 3-second dismissal timer (runtime timing verification pending).
+- [x] Add “Yasser Benmaghnia” creator credit to the opening widget (runtime verification pending).
 - [x] Set Lvl_Reveal as the startup map; verify its transition to the main menu and mobile safe areas in-editor.
 
 ## Stage 2 — core gameplay
