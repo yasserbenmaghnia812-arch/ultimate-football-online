@@ -47,7 +47,7 @@ public sealed class FootballRefereeSystem : MonoBehaviour
             receiverInOwnHalf, fromRestart);
         if (offside)
         {
-            Vector3 restart = ballPosition;
+            Vector3 restart = receiver.position;
             restart.y = 0.22f;
             CallRestart(FootballRestartType.IndirectFreeKick, restart, false, "Offside");
             if (statistics != null) statistics.RegisterOffside(true);
@@ -65,9 +65,8 @@ public sealed class FootballRefereeSystem : MonoBehaviour
         foulsByPlayer.TryGetValue(playerId, out count);
         foulsByPlayer[playerId] = ++count;
 
-        bool defendingTeamCommitted = committedByHome;
         bool awardedToHome = !committedByHome;
-        if (insidePenaltyArea && defendingTeamCommitted)
+        if (insidePenaltyArea)
         {
             CallRestart(FootballRestartType.Penalty, location, awardedToHome, "Penalty");
         }
