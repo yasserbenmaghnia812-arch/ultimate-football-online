@@ -14,11 +14,11 @@ This is a plan, not a claim that every feature is implemented. Verify each item 
 - [ ] Clone, run `git lfs pull`, open Football.uproject and test the match map.
 
 ## Stage 1 — identity and opening
-- [ ] Set the product/game display name to Ultimate Football Online.
-- [ ] Create a red full-screen opening sequence.
-- [ ] Display the white title centered for exactly 3 seconds.
-- [ ] Show “Yasser Benmaghnia” as creator credit.
-- [ ] Transition to the main menu and verify mobile safe areas.
+- [x] Set the product/game display name to Ultimate Football Online.
+- [ ] Create a red full-screen opening sequence (requires editing the existing Unreal Widget/Level assets).
+- [ ] Display the white title centered for exactly 3 seconds (not yet verified or implemented in the binary Widget asset).
+- [ ] Show “Yasser Benmaghnia” as creator credit in the opening widget (not yet verified in-editor).
+- [x] Set Lvl_Reveal as the startup map; verify its transition to the main menu and mobile safe areas in-editor.
 
 ## Stage 2 — core gameplay
 - [ ] Audit movement, acceleration, collisions and animation blending.
