@@ -29,7 +29,7 @@ public sealed class FootballCharacterVisual : MonoBehaviour
         leftLeg = AddPart("LeftLeg", PrimitiveType.Capsule, new Vector3(-0.20f, -0.42f, 0f), new Vector3(0.22f, 0.48f, 0.22f), shortsMaterial);
         rightLeg = AddPart("RightLeg", PrimitiveType.Capsule, new Vector3(0.20f, -0.42f, 0f), new Vector3(0.22f, 0.48f, 0.22f), shortsMaterial);
         AddPart("LeftBoot", PrimitiveType.Cube, new Vector3(-0.20f, -0.79f, 0.10f), new Vector3(0.22f, 0.12f, 0.36f), bootMaterial);
-        AddPart("RightBoot", PrimitiveType.Cube, new Vector3(0.20f, -0.79f, 0.10f), new Vector3(0.22f, 0.12f, 0.36f), ColorMaterial(Color.black));
+        AddPart("RightBoot", PrimitiveType.Cube, new Vector3(0.20f, -0.79f, 0.10f), new Vector3(0.22f, 0.12f, 0.36f), bootMaterial);
         lastPosition = transform.position;
     }
 
