@@ -26,6 +26,7 @@ public sealed class FootballCharacterAnimationDriver : MonoBehaviour
     private readonly HashSet<int> boolParameters = new HashSet<int>();
     private readonly HashSet<int> triggerParameters = new HashSet<int>();
     private Vector3 previousPosition;
+    private float nextDribbleTriggerTime;
 
     public void Bind(Animator target)
     {
@@ -73,7 +74,12 @@ public sealed class FootballCharacterAnimationDriver : MonoBehaviour
     public void PlayHeader() { Trigger(headerTrigger); }
     public void PlayDive() { Trigger(diveTrigger); }
     public void PlaySave() { Trigger(saveTrigger); }
-    public void PlayDribble() { Trigger(dribbleTrigger); }
+    public void PlayDribble()
+    {
+        if (Time.time < nextDribbleTriggerTime) return;
+        nextDribbleTriggerTime = Time.time + 0.75f;
+        Trigger(dribbleTrigger);
+    }
     public void PlayThrowIn() { Trigger(throwInTrigger); }
     public void PlayTackle() { Trigger(tackleTrigger); }
     public void PlayCelebrate() { Trigger(celebrateTrigger); }
