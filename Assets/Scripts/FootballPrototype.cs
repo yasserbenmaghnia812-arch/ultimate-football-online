@@ -22,6 +22,8 @@ public sealed class FootballPrototype : MonoBehaviour
     private int blueScore, redScore;
     private float matchTime = 180f;
     private float aiThink;
+    private Transform pendingPassReceiver;
+    private float pendingPassTimer;
     private GUIStyle hud, buttonStyle;
     private Material blueMat, redMat, whiteMat, grassMat;
     private bool use60Fps;
@@ -238,6 +240,7 @@ public sealed class FootballPrototype : MonoBehaviour
         matchTime -= Time.deltaTime;
         if (matchTime <= 0) matchTime = 0;
         CheckGoal();
+        TickPendingPass(Time.deltaTime);
         Vector3 camTarget = player.position + new Vector3(0, 10, -12);
         gameCamera.transform.position = Vector3.Lerp(gameCamera.transform.position, camTarget, Time.deltaTime * 3.5f);
         gameCamera.transform.LookAt(player.position + Vector3.forward * 5);
@@ -252,7 +255,13 @@ public sealed class FootballPrototype : MonoBehaviour
         Vector3 direction = player.forward.sqrMagnitude > 0.1f ? player.forward : Vector3.forward;
         if (power >= 9f)
         {
-            if (matchStatistics != null) matchStatistics.RegisterShot(true, false);
+            if (matchStatistics != null)
+            {
+                float goalT = direction.z > 0.001f ? (21.5f - ball.position.z) / direction.z : -1f;
+                float predictedX = goalT > 0f ? ball.position.x + direction.x * goalT : 99f;
+                bool predictedOnTarget = goalT > 0f && Mathf.Abs(predictedX) <= 3f;
+                matchStatistics.RegisterShot(true, predictedOnTarget);
+            }
         }
         else
         {
@@ -268,7 +277,12 @@ public sealed class FootballPrototype : MonoBehaviour
                     return;
                 }
             }
-            if (matchStatistics != null) matchStatistics.RegisterPass(true, false);
+            if (pendingPassReceiver != null && matchStatistics != null)
+                matchStatistics.RegisterPass(true, false);
+            pendingPassReceiver = receiver;
+            pendingPassTimer = receiver != null ? 3.5f : 0f;
+            if (receiver == null && matchStatistics != null)
+                matchStatistics.RegisterPass(true, false);
         }
         float baseSpeed = power >= 9f ? 22f : 13f;
         float shotSpeed = playerAttributes != null ? playerAttributes.GetKickSpeed(baseSpeed) : baseSpeed;
@@ -278,6 +292,24 @@ public sealed class FootballPrototype : MonoBehaviour
         Vector3 spin = Vector3.Cross(Vector3.up, direction) * (power >= 9f ? 2.2f : 0.7f);
         if (ballPhysics != null) ballPhysics.Kick(direction, shotSpeed, lift, spin);
         else ballBody.AddForce((direction + Vector3.up * lift).normalized * shotSpeed * ballBody.mass, ForceMode.Impulse);
+    }
+
+    private void TickPendingPass(float deltaTime)
+    {
+        if (pendingPassReceiver == null) return;
+        if (Vector3.Distance(pendingPassReceiver.position, ball.position) <= 1.65f)
+        {
+            matchStatistics?.RegisterPass(true, true);
+            pendingPassReceiver = null;
+            pendingPassTimer = 0f;
+            return;
+        }
+        pendingPassTimer -= deltaTime;
+        if (pendingPassTimer <= 0f)
+        {
+            matchStatistics?.RegisterPass(true, false);
+            pendingPassReceiver = null;
+        }
     }
 
     private void UpdateAI()
