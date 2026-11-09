@@ -9,7 +9,8 @@ public sealed class FootballMatchRules : MonoBehaviour
 {
     public event Action<int, int> ScoreChanged;
     public event Action<FootballMatchState> StateChanged;
-    public event Action<string> MatchEvent;\n    public event Action<FootballRestartType, Vector3, bool> RestartAwarded;
+    public event Action<string> MatchEvent;
+    public event Action<FootballRestartType, Vector3, bool> RestartAwarded;
 
     public FootballMatchState State { get; private set; } = FootballMatchState.PreMatch;
     private FootballMatchState stateBeforePause = FootballMatchState.FirstHalf;
@@ -32,7 +33,9 @@ public sealed class FootballMatchRules : MonoBehaviour
     {
         HomeScore = AwayScore = 0;
         MatchSeconds = 0f;
-        HomeYellowCards = AwayYellowCards = HomeRedCards = AwayRedCards = 0;\n        yellowByPlayer.Clear();\n        CurrentRestart = FootballRestartType.KickOff;
+        HomeYellowCards = AwayYellowCards = HomeRedCards = AwayRedCards = 0;
+        yellowByPlayer.Clear();
+        CurrentRestart = FootballRestartType.KickOff;
         SetState(FootballMatchState.FirstHalf);
         MatchEvent?.Invoke("Kick-off");
     }
