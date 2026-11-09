@@ -33,28 +33,24 @@ public sealed class CinematicIntro : MonoBehaviour
         float pulse = 1f + Mathf.Sin(t * Mathf.PI * 2f) * 0.012f;
 
         GUI.color = new Color(1f, 1f, 1f, alpha);
-        DrawRect(new Rect(0, 0, Screen.width, Screen.height), new Color(0.48f, 0.015f, 0.045f, 1f));
-        DrawRect(new Rect(0, 0, Screen.width, Screen.height * 0.16f), new Color(0.22f, 0.005f, 0.025f, 0.55f));
-        DrawRect(new Rect(0, Screen.height * 0.84f, Screen.width, Screen.height * 0.16f), new Color(0.18f, 0.003f, 0.02f, 0.65f));
+        DrawRect(new Rect(0, 0, Screen.width, Screen.height), new Color(0.42f, 0.008f, 0.035f, 1f));
+        DrawRect(new Rect(0, 0, Screen.width, Screen.height * 0.14f), new Color(0.16f, 0.002f, 0.018f, 0.7f));
+        DrawRect(new Rect(0, Screen.height * 0.86f, Screen.width, Screen.height * 0.14f), new Color(0.16f, 0.002f, 0.018f, 0.7f));
 
-        float lineWidth = Screen.width * Mathf.Lerp(0.08f, 0.72f, Mathf.SmoothStep(0, 1, t));
-        DrawRect(new Rect((Screen.width - lineWidth) * 0.5f, Screen.height * 0.59f, lineWidth, 3f),
-            new Color(1f, 1f, 1f, alpha * 0.9f));
+        float lineWidth = Screen.width * Mathf.Lerp(0.04f, 0.78f, Mathf.SmoothStep(0, 1, t));
+        DrawRect(new Rect((Screen.width - lineWidth) * 0.5f, Screen.height * 0.61f, lineWidth, 3f),
+            new Color(1f, 1f, 1f, alpha));
 
         if (titleStyle == null)
         {
-            titleStyle = new GUIStyle(GUI.skin.label)
-            {
-                alignment = TextAnchor.MiddleCenter,
-                fontStyle = FontStyle.Bold,
-                fontSize = Mathf.Clamp(Screen.width / 13, 25, 54),
+            titleStyle = new GUIStyle(GUI.skin.label) {
+                alignment = TextAnchor.MiddleCenter, fontStyle = FontStyle.Bold,
+                fontSize = Mathf.Clamp(Screen.width / 22, 24, 52),
                 normal = { textColor = Color.white }
             };
-            subtitleStyle = new GUIStyle(GUI.skin.label)
-            {
-                alignment = TextAnchor.MiddleCenter,
-                fontSize = Mathf.Clamp(Screen.width / 48, 12, 20),
-                normal = { textColor = new Color(1f, 1f, 1f, 0.82f) }
+            subtitleStyle = new GUIStyle(GUI.skin.label) {
+                alignment = TextAnchor.MiddleCenter, fontSize = Mathf.Clamp(Screen.width / 55, 11, 18),
+                normal = { textColor = new Color(1f, 1f, 1f, 0.86f) }
             };
         }
 
@@ -63,15 +59,14 @@ public sealed class CinematicIntro : MonoBehaviour
         GUI.matrix = Matrix4x4.TRS(center, Quaternion.identity, new Vector3(pulse, pulse, 1f)) *
                      Matrix4x4.TRS(-center, Quaternion.identity, Vector3.one);
         GUI.color = new Color(1f, 1f, 1f, alpha);
-        GUI.Label(new Rect(0, Screen.height * 0.39f, Screen.width, 90), "ULTIMATE FOOTBALL", titleStyle);
+        GUI.Label(new Rect(0, Screen.height * 0.40f, Screen.width, 82), "Yasser Benmaghnia", titleStyle);
         GUI.matrix = oldMatrix;
-        GUI.color = new Color(1f, 1f, 1f, alpha * 0.86f);
-        GUI.Label(new Rect(0, Screen.height * 0.52f, Screen.width, 42),
-            "THE GAME IS YOURS  •  استعد للمباراة", subtitleStyle);
+        GUI.color = new Color(1f, 1f, 1f, alpha * 0.88f);
+        GUI.Label(new Rect(0, Screen.height * 0.53f, Screen.width, 38),
+            "ULTIMATE FOOTBALL  •  استعد للمباراة", subtitleStyle);
         GUI.color = Color.white;
 
-        if (Time.unscaledTime - startedAt >= Duration)
-            Destroy(gameObject);
+        if (Time.unscaledTime - startedAt >= Duration) Destroy(gameObject);
     }
 
     private void DrawRect(Rect rect, Color color)
