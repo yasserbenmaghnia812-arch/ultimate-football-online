@@ -7,12 +7,13 @@ This file distinguishes code foundations from features that have been imported, 
 - Runtime-generated pitch, goals, 22-player prototype, ball physics, basic AI movement, mobile touch controls and follow camera.
 - Procedural player silhouettes and simple limb swing; these are placeholders, not professional rigged footballers.
 - Animator bridge for future licensed humanoid prefabs; runtime loading checks `Resources/Footballers/BluePlayer` and `Resources/Footballers/RedPlayer`, falling back to procedural silhouettes when absent. It now exposes Kick, Pass, Tackle, Dribble, Header, Dive, Save, ThrowIn and Celebrate triggers. See `CHARACTER_IMPORT_PIPELINE.md`. No rigged character or football animation controller is imported yet.
-- Tactical role positioning, player attributes, stamina, local career save, 18 fictional squad records, starting-XI validation, formation selection, a runtime squad/player-card panel, localization and Android quality settings.
+- Tactical role positioning, player attributes, stamina, local career save, 18 fictional squad records, starting-XI validation, formation selection, a scrollable squad/player-card panel, roster-level substitution bookkeeping, Arabic-first team labels, localization and Android quality settings.
 - Offside decision called when the controlled player passes; the defender line includes the goalkeeper. The geometry still does not cover all IFAB exceptions or AI-team passes.
 - Referee foundation for foul registration, direct free-kick/penalty classification, restart notifications, reckless-challenge/DOGSO card inputs, per-player yellow-card tracking and second-yellow dismissal. Contact detection and restart gameplay are not fully integrated.
-- Statistics fields for shots, passes, tackles, fouls, corners, offsides, possession, cards, saves, clearances, interceptions, free kicks, penalties, throw-ins and goal kicks. Some counters still have no reliable event producer and therefore are not yet complete match statistics.
+- Statistics fields for goals, shots, predicted shots on target, completed/failed controlled-player passes, tackles, fouls, corners, offsides, possession, cards, saves, clearances, interceptions, free kicks, penalties, throw-ins and goal kicks. Several defensive/restart counters still lack event producers and are not yet complete match statistics.
 - Procedural stands, crowd silhouettes, floodlight objects, advertising boards and synthesized ambient crowd audio. These are lightweight placeholders, not a production stadium.
-- Three-second red intro and Android build configuration.
+- Three-second red intro, Android build configuration and an Editor validation menu for package, Android module, scene and imported player-asset checks.
+- Unity package dependencies for Netcode for GameObjects 2.13.3, Unity Transport 2.7.5 and Multiplayer Services 2.4.1. Online room UI supports anonymous sign-in, Relay-backed room creation (22-player capacity), join-code joining/copying and leaving.
 
 ## Verification notes — 9 November 2026
 
@@ -30,7 +31,7 @@ These are source-level corrections only. They have not been compiled or play-tes
 - Full IFAB referee simulation: automatic foul/contact classification, advantage, handball, DOGSO context, referee positioning, VAR, restart placement, free-kick wall, penalty taker/keeper control, throw-ins, corners, goal kicks and all restart controls.
 - Complete event-based statistics with verified pass completion, shots on target, saves, interceptions, clearances and player-level match ratings.
 - Full production menu system, interactive substitutions, persistent player-card collection/progression, team selection, tactical player positioning, settings and controller remapping. The current team/card panel is an initial local prototype UI.
-- Online gameplay replication: the source now has anonymous Unity Authentication, Relay-backed 22-member session creation, join-code joining/copying and leave flow. It does not yet synchronize the match simulation, implement matchmaking queues, reconnect policy, anti-cheat or a dedicated authoritative server.
+- Online gameplay replication: room/session creation is in source, but the 22-player lobby limit is not a working 11v11 match. Player and ball NetworkObjects, authoritative physics, synchronized match state, team assignment, matchmaking, reconnect, anti-cheat and dedicated-server deployment remain unimplemented.
 - Actual Unity asset imports (the new loader is only a hookup), successful Unity Editor compile, automated play-mode tests, Android package build, install test or device performance measurements.
 
 ## Build status
@@ -48,9 +49,9 @@ Use original assets or assets whose licenses permit the intended game distributi
 ## Engineering order
 
 1. Establish a clean Unity compile and a first Android APK using Unity Build Automation.
-2. Import a properly licensed rigged humanoid model and configure the Animator bridge.
+2. Import a properly licensed rigged humanoid model and football animation clips; configure the Animator bridge.
 3. Add football-specific animations, ball contact and goalkeeper states.
 4. Implement a deterministic referee/restart state machine and connect every gameplay event to statistics.
 5. Finish menus, squad/card/tactics flows.
-6. Add server-authoritative multiplayer, beginning with 1v1 before scaling.
+6. Synchronize a single player and ball over NGO, then build server-authoritative 1v1 before scaling to 11v11.
 7. Profile on physical low-memory Android hardware and optimize before increasing crowd/player detail.
