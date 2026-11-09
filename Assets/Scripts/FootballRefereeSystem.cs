@@ -12,6 +12,7 @@ public sealed class FootballRefereeSystem : MonoBehaviour
 {
     public event Action<string, Vector3> Whistle;
     public event Action<FootballRestartType, Vector3, bool> RestartCalled;
+    public event Action<string, FootballDisciplineCard> DisciplineEvent;
     public float RestartDelay { get; private set; } = 1.5f;
 
     private FootballMatchRules rules;
@@ -92,7 +93,7 @@ public sealed class FootballRefereeSystem : MonoBehaviour
     public bool IssueCard(bool homeTeam, string playerId, FootballDisciplineCard card)
     {
         bool sentOff = rules != null && rules.IssuePlayerCard(homeTeam, playerId, card);
-        Whistle?.Invoke(card + " card: " + playerId, Vector3.zero);
+        DisciplineEvent?.Invoke(playerId, card);
         return sentOff;
     }
 
