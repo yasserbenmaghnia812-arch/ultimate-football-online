@@ -4,10 +4,16 @@
 #include "Engine/World.h"
 #include "UObject/CoreUObjectDelegates.h"
 #include "Blueprint/UserWidget.h"
+#include "Internationalization/Internationalization.h"
 
 void UUltimateFootballGameInstance::Init()
 {
     Super::Init();
+
+    // Start with Arabic culture. Localized FText resources are still required
+    // for every Blueprint/widget label to appear translated.
+    FInternationalization::Get().SetCurrentCulture(TEXT("ar"));
+
     FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UUltimateFootballGameInstance::HandlePostLoadMap);
 }
 
