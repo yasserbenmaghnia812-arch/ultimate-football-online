@@ -56,7 +56,8 @@ public sealed class FootballRefereeSystem : MonoBehaviour
     }
 
     public void RegisterFoul(bool committedByHome, string playerId, Vector3 location,
-        bool insidePenaltyArea, bool denyingObviousGoalScoringOpportunity = false)
+        bool insidePenaltyArea, bool denyingObviousGoalScoringOpportunity = false,
+        bool recklessChallenge = false, bool excessiveForce = false)
     {
         if (string.IsNullOrWhiteSpace(playerId)) playerId = "unknown";
         statistics?.RegisterFoul(committedByHome);
@@ -75,9 +76,9 @@ public sealed class FootballRefereeSystem : MonoBehaviour
             CallRestart(FootballRestartType.DirectFreeKick, location, awardedToHome, "Foul");
         }
 
-        if (denyingObviousGoalScoringOpportunity)
+        if (denyingObviousGoalScoringOpportunity || excessiveForce)
             IssueCard(committedByHome, playerId, FootballDisciplineCard.Red);
-        else if (count >= 3)
+        else if (recklessChallenge)
             IssueCard(committedByHome, playerId, FootballDisciplineCard.Yellow);
     }
 
