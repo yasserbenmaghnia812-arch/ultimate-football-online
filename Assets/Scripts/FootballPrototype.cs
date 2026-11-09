@@ -51,6 +51,8 @@ public sealed class FootballPrototype : MonoBehaviour
         referee.Whistle += OnRefereeWhistle;
         if (GetComponent<FootballTeamManagementUI>() == null)
             gameObject.AddComponent<FootballTeamManagementUI>();
+        if (GetComponent<FootballOnlineRooms>() == null)
+            gameObject.AddComponent<FootballOnlineRooms>();
         careerProfile = FootballCareerSaveSystem.Load();
         matchRules.StateChanged += OnMatchStateChanged;
         matchRules.StartMatch();
