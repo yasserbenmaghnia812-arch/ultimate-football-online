@@ -16,32 +16,32 @@ public static class FootballTacticalAI
         switch (role)
         {
             case FootballRole.Goalkeeper:
-                target = new Vector3(Mathf.Clamp(ball.x * 0.22f, -2.2f, 2.2f), 1.1f, -direction * (pitchHalfLength - 3f));
+                target = new Vector3(Mathf.Clamp(ball.x * 0.22f, -2.2f, 2.2f), 1.0f, -direction * (pitchHalfLength - 3f));
                 break;
             case FootballRole.Defender:
-                target = new Vector3(home.x + ball.x * 0.12f, 1.1f, home.z + ballProgress * 2.4f);
+                target = new Vector3(home.x + ball.x * 0.12f, 1.0f, home.z + ballProgress * 2.4f);
                 break;
             case FootballRole.Midfielder:
-                target = new Vector3(home.x * 0.7f + ball.x * 0.3f, 1.1f, home.z + ballProgress * 4.5f);
+                target = new Vector3(home.x * 0.7f + ball.x * 0.3f, 1.0f, home.z + ballProgress * 4.5f);
                 break;
             case FootballRole.Winger:
-                target = new Vector3(Mathf.Sign(lane == 0 ? -1 : 1) * Mathf.Max(7f, Mathf.Abs(home.x)), 1.1f, home.z + direction * 3f);
+                target = new Vector3(Mathf.Sign(lane == 0 ? -1 : 1) * Mathf.Max(7f, Mathf.Abs(home.x)), 1.0f, home.z + direction * 3f);
                 break;
             case FootballRole.Striker:
-                target = new Vector3(home.x * 0.4f + ball.x * 0.15f, 1.1f, home.z + direction * 5f);
+                target = new Vector3(home.x * 0.4f + ball.x * 0.15f, 1.0f, home.z + direction * 5f);
                 break;
         }
 
         if (style == FootballTeamStyle.HighPress && !attacking)
-            target = Vector3.Lerp(target, new Vector3(ball.x, 1.1f, ball.z - direction * 2f), 0.28f);
+            target = Vector3.Lerp(target, new Vector3(ball.x, 1.0f, ball.z - direction * 2f), 0.28f);
         else if (style == FootballTeamStyle.DeepBlock && !attacking)
-            target = Vector3.Lerp(target, new Vector3(home.x, 1.1f, home.z - direction * 2f), 0.35f);
+            target = Vector3.Lerp(target, new Vector3(home.x, 1.0f, home.z - direction * 2f), 0.35f);
         else if (style == FootballTeamStyle.QuickCounter && attacking)
             target.z += direction * 2.5f;
 
         target.x = Mathf.Clamp(target.x, -12.5f, 12.5f);
         target.z = Mathf.Clamp(target.z, -20.5f, 20.5f);
-        target.y = 1.1f;
+        target.y = 1.0f;
         return target;
     }
 
