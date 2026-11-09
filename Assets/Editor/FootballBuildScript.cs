@@ -21,6 +21,7 @@ public static class FootballBuildScript
         PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARM64;
         PlayerSettings.defaultInterfaceOrientation = UIOrientation.LandscapeLeft;
         PlayerSettings.runInBackground = false;
+        PlayerSettings.activeInputHandler = ActiveInputHandler.InputManager;
 
         var options = new BuildPlayerOptions
         {
