@@ -103,6 +103,17 @@ These are study references, not automatic dependencies. Review the exact reposit
 - Physics Simulation and Animation for Virtual Football: https://reetcho.itch.io/physics-simulation-and-animation-for-virtual-football — ball spin, bounce, air effects, and shot-model concepts; verify source and asset terms before reuse.
 - Mixamo FAQ: https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html — animation/character use terms; verify current Adobe terms for the exact use.
 
+
+### Additional open-source implementation references (reviewed 2026-11-09)
+
+- [Football-Soccer (Unity/C#)](https://github.com/NikolaDjurovic5/Football-Soccer) — publicly declares the MIT license; a small gameplay example, not a complete 11v11 engine. Preserve its license notice if any code is reused.
+- [Multiplayer-Football (Unity + Photon Fusion 2)](https://github.com/JoonaV556/Multiplayer-Football) — useful networking architecture example. No reuse is planned until its repository license and all third-party terms are verified.
+- [FootballOnline (Unity + Photon Fusion)](https://github.com/Collywobbles007/FootballOnline) — third-person online football architecture; its README notes an older Unity version and requires Photon Fusion setup. Treat as a technical reference only until license compatibility is established.
+- [Unity Football Motion Demo](https://github.com/hyunjuc/unity-football-motion-demo) — useful reference for Humanoid retargeting, Blend Trees, NavMesh AI, and tackle/steal state design. The author explicitly does not redistribute raw Mixamo animation assets; obtain assets directly under their applicable license.
+- [Unity-Soccer](https://github.com/JustArmaan/Unity-Soccer) — simple Rigidbody-based Unity football reference; verify license before code reuse.
+
+No third-party repository code or game assets were copied into this project during this research increment. These links inform architecture and test ideas only.
+
 ## 8. Research sources
 
 - EA SPORTS FC 26 Gameplay Deep Dive: https://www.ea.com/games/ea-sports-fc/fc-26/news/pitch-notes-fc26-gameplay-deep-dive
