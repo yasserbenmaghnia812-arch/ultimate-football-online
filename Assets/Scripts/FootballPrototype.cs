@@ -237,7 +237,8 @@ public sealed class FootballPrototype : MonoBehaviour
             Transform receiver = FindForwardPassReceiver(direction);
             if (receiver != null && referee != null)
             {
-                Transform[] defenders = redTeam.ToArray();
+                Transform[] defenders = new Transform[redTeam.Count];
+                for (int i = 0; i < redTeam.Count; i++) defenders[i] = redTeam[i];
                 bool inOwnHalf = receiver.position.z < 0f;
                 if (referee.CheckOffsideAtPass(receiver, ball.position, defenders, true, inOwnHalf, false))
                 {
