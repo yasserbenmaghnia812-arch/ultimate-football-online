@@ -11,6 +11,7 @@ public sealed class FootballMatchRules : MonoBehaviour
     public event Action<string> MatchEvent;
 
     public FootballMatchState State { get; private set; } = FootballMatchState.PreMatch;
+    private FootballMatchState stateBeforePause = FootballMatchState.FirstHalf;
     public int HomeScore { get; private set; }
     public int AwayScore { get; private set; }
     public float MatchSeconds { get; private set; }
@@ -81,8 +82,12 @@ public sealed class FootballMatchRules : MonoBehaviour
 
     public void SetPaused(bool paused)
     {
-        if (paused && State != FootballMatchState.Paused) SetState(FootballMatchState.Paused);
-        else if (!paused && State == FootballMatchState.Paused) SetState(MatchSeconds < halfDurationSeconds ? FootballMatchState.FirstHalf : FootballMatchState.SecondHalf);
+        if (paused && State != FootballMatchState.Paused)
+        {
+            stateBeforePause = State;
+            SetState(FootballMatchState.Paused);
+        }
+        else if (!paused && State == FootballMatchState.Paused) SetState(stateBeforePause);
     }
 
     private void SetState(FootballMatchState state)
