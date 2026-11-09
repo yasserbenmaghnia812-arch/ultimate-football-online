@@ -236,7 +236,7 @@ public sealed class FootballPrototype : MonoBehaviour
             {
                 Transform[] defenders = new Transform[Mathf.Max(0, redTeam.Count - 1)];
                 for (int i = 1; i < redTeam.Count; i++) defenders[i - 1] = redTeam[i];
-                bool inOwnHalf = player.position.z < 0f;
+                bool inOwnHalf = receiver.position.z < 0f;
                 if (referee.CheckOffsideAtPass(receiver, ball.position, defenders, true, inOwnHalf, false))
                 {
                     if (matchStatistics != null) matchStatistics.RegisterOffside(true);
