@@ -26,6 +26,11 @@ An original Unity 6 football game prototype for Android, authored by **Yasser Be
 - `Assets/Scripts/FootballMatchRules.cs` — match state, score and discipline event foundation.
 - `Assets/Scripts/FootballPlayerCard.cs` — ScriptableObject player-card and progression model.
 - `Assets/Scripts/FootballLocalization.cs` — Arabic/French/English string foundation.
+- `Assets/Scripts/FootballCareerProfile.cs` — local career profile, progression, rewards, and save/load.
+- `Assets/Scripts/FootballOffsideDetector.cs` — geometric offside-position helper (not yet wired to a referee/pass event pipeline).
+- `Assets/Scripts/FootballSquadSystem.cs` — roster validation, formation selection, and substitution bookkeeping.
+- `Assets/Scripts/FootballMatchStatistics.cs` — shots, passing, tackles, fouls, corners, offsides, and possession counters.
+- `Assets/Scripts/FootballRuntimeQuality.cs` — Android-oriented low/balanced/high quality presets.
 - `Assets/Editor/FootballBuildScript.cs` — creates a minimal runtime scene and builds Android APK.
 - `Docs/RESEARCH_AND_ROADMAP.md` — design research, source links, implementation decisions, and staged roadmap.
 
@@ -62,11 +67,11 @@ See [Docs/RESEARCH_AND_ROADMAP.md](Docs/RESEARCH_AND_ROADMAP.md).
 This repository is now a more complete prototype scaffold, **not** a finished FIFA/PES-scale game. The following still require substantial implementation, licensed assets, testing, or external service setup:
 
 - Production-quality rigged 3D players, stadiums, kits, animations, crowds, commentary, and original UI art.
-- Full football rules: robust offside detection, fouls, free kicks, penalties, throw-ins, corners, substitutions, VAR, referee positioning, and complete goalkeeper animation/decision logic.
+- Full football rules: offside helper exists but is not integrated; robust foul detection, free kicks, penalties, throw-ins, corners, VAR, referee positioning, and complete goalkeeper animation/decision logic remain incomplete.
 - Proper physical tackling, shielding, headers, ball possession, first touch, and animation-driven contact. The current tackle is a simple close-range ball-dispossession prototype.
-- Full squad/club management, card collection UI, progression screens, transfers, and persistence.
+- Full squad/club management UI, card collection UI, progression screens, transfers, and cloud persistence. Local career save and basic squad/substitution bookkeeping are foundations only.
 - Complete Arabic RTL layout, French and English translation coverage, menus, accessibility, and settings.
 - Online multiplayer rooms, invites, matchmaking, authoritative server simulation, anti-cheat, reconnect, and backend services. No multiplayer service is currently connected.
-- Device profiling, QA, store signing, and verified APK output.
+- Device profiling, QA, store signing, and verified APK output. The current GitHub Actions runs stop before Unity compilation because Unity Personal license secrets are not configured.
 
 All shipped code, models, animation, audio, club marks, kits, player identities, and UI must be original or appropriately licensed. Commercial games are gameplay-design references only; no proprietary EA/Konami code or assets are included.
