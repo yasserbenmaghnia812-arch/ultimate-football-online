@@ -19,7 +19,7 @@ public sealed class FootballMatchRules : MonoBehaviour
     public int HomeRedCards { get; private set; }
     public int AwayRedCards { get; private set; }
 
-    [SerializeField, Min(60f)] private float halfDurationSeconds = 2700f;
+    [SerializeField, Min(60f)] private float halfDurationSeconds = 90f;
 
     public void StartMatch()
     {
