@@ -1,40 +1,45 @@
 # Ultimate Football Online
 
-A mobile-first original 3D football game project built with Unity 6.
+An original mobile football game project using Unity 6, targeting Android.
 
-## Implemented in this first prototype
-- Unity 6 project and registered main scene
-- Three-second cinematic intro: deep red screen, centered white game title, animated reveal, then automatic entry into the match
-- Red Android control buttons with white labels
-- Runtime-generated football pitch, goal, player, ball, and follow camera
-- Basic player movement and shooting interaction
-- Low-end device baseline: 30 FPS target, disabled anti-aliasing and real-time shadows
-- GitHub Actions workflow for Android APK builds
+## Current prototype implementation
+- Three-second dark-red cinematic intro with **Yasser Benmaghnia** centered in white, an animated reveal line, and automatic transition to gameplay.
+- Generated 3D pitch, goals, ball physics (Rigidbody), and follow camera.
+- Prototype 11-player teams on both sides (22 simple capsule players), with basic formation movement and lightweight CPU behaviours.
+- Mobile touch controls: movement, pass, and shoot; keyboard controls remain available in the Editor.
+- Basic score, match countdown, goal detection, and kickoff reset.
+- Red controls with white labels.
+- Adaptive 30/60 FPS target based on device memory/CPU count; low-cost rendering defaults and a larger physics timestep in 30 FPS mode.
+- GitHub Actions Android APK workflow.
 
-## Build an Android APK
-1. Open the repository in Unity **6000.0.32f1** or a compatible Unity 6 release.
-2. Install Android Build Support, Android SDK & NDK Tools, and OpenJDK through Unity Hub.
-3. Configure the GitHub Actions repository secret `UNITY_LICENSE` with a valid Unity license file.
-4. Open **Actions → Build Android APK → Run workflow**.
-5. Download the generated APK from the workflow's Artifacts section after a successful run.
+## Build
+1. Open with Unity **6000.0.32f1** or a compatible Unity 6 editor.
+2. Install Android Build Support, Android SDK & NDK Tools, and OpenJDK.
+3. Add a valid Unity license as the repository Actions secret `UNITY_LICENSE`.
+4. Run **Actions → Build Android APK → Run workflow**.
+5. Download the APK artifact after a successful run.
 
-A valid Unity license secret is required. The APK has not yet been built or device-tested.
+The workflow has not yet been verified by a successful Unity build. A valid Unity license is required.
 
-## Game direction
-- Platform: Android APK
-- Target match format: 11 vs 11
-- Modes planned: matches against AI, online multiplayer, private rooms, and friend invitations
-- Interface: Arabic-first with right-to-left layout
-- Optimization target: entry-level Android phones
-- Backend: use free-tier services where practical; free tiers may have usage limits and sleeping instances
+## Target product
+| Feature | Target |
+|---|---|
+| Engine / platform | Unity 6 / Android APK |
+| Match format | 11 vs 11 |
+| Modes | Local match vs AI; online rooms and friend invitations |
+| Languages | Arabic RTL, French, English |
+| Build | GitHub Actions |
+| Hosting | Free tiers where practical |
 
-## Development roadmap
-1. Complete the local match loop and mobile controls.
-2. Add teams, player formations, goalkeeper, passing, shooting, match clock, and basic AI.
-3. Build Arabic main menu, team selection, and match settings.
-4. Add online rooms, invitations, and authoritative multiplayer networking.
-5. Profile and test on low-memory Android devices.
+## Roadmap (not yet complete)
+1. Replace capsule placeholders with rigged football characters, animations, goalkeeper logic, player switching, and proper collision/ball control.
+2. Improve AI tactics, passing lanes, fouls, offside, throw-ins, corners, penalties, substitutions, and full match rules.
+3. Add a localized Arabic RTL / French / English menu and settings.
+4. Add online multiplayer with authoritative server simulation, room codes, invites, reconnect, and anti-cheat.
+5. Add original stadium audio, crowd ambience, and commentary. A licensed recording may be used where rights are available; no unlicensed imitation or recording of a real commentator is included.
+6. Profile on real Android devices and tune quality, memory, thermal behaviour, and frame pacing.
 
-**Status:** early prototype scaffold. Full 11v11 gameplay, online multiplayer, AI opponents, Arabic menus, and backend services are not implemented yet.
+## Important status
+This is a playable-direction prototype scaffold, not a finished commercial football game. The 11v11 players are simple runtime placeholders with basic AI movement; online multiplayer, full football rules, finished animations/assets, and full localization are not implemented. APK generation and device testing are still pending.
 
-All teams, names, logos, kits, and assets will be original. This project does not include proprietary PES/eFootball content.
+All teams, badges, names, kits, and assets should be original or properly licensed. No proprietary PES/eFootball assets are included.
