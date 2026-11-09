@@ -29,7 +29,7 @@ Recommended football action names to map to the controller: Idle, Walk, Run, Spr
 
 ## Referee system status
 
-The existing referee code currently supports an offside-position check at pass time, foul/restart registration APIs, penalty-area classification, yellow/red card bookkeeping, second-yellow dismissal, and restart/statistics events. It is not a complete IFAB rules engine yet. The gameplay still needs reliable foul/contact detection, handball rules (if enabled), advantage, goalkeeper handling, ball-out boundary detection, corner/goal-kick/throw-in classification, penalty shootout logic, VAR/review policy, and exhaustive event wiring. Each rule must be validated against authoritative football-law test cases before calling it complete.
+The existing referee code currently supports an offside-position check at pass time, foul/restart registration APIs, penalty-area classification, yellow/red card bookkeeping, second-yellow dismissal, restart/statistics events, and a basic gameplay link for missed-ball close tackles. Touchline exits now produce throw-ins; goal-line exits produce corner or goal-kick decisions based on last-touch team. These are prototype decisions and still need law-by-law testing. It is not a complete IFAB rules engine yet. The gameplay still needs reliable foul/contact detection, handball rules (if enabled), advantage, goalkeeper handling, ball-out boundary detection, corner/goal-kick/throw-in classification, penalty shootout logic, VAR/review policy, and exhaustive event wiring. Each rule must be validated against authoritative football-law test cases before calling it complete.
 
 ## Online replication status
 
