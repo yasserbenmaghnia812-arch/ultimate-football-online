@@ -4,14 +4,14 @@
 [Bb]uild/
 [Bb]uilds/
 [Ll]ogs/
-[Uu]ser[Ss]ettings/
-[Mm]emoryCaptures/
+UserSettings/
+MemoryCaptures/
+Recordings/
 .vs/
 .idea/
-.gradle/
-ExportedObj/
 *.csproj
 *.sln
+*.suo
 *.user
 *.userprefs
 *.pidb
@@ -21,4 +21,3 @@ ExportedObj/
 *.mdb
 *.opendb
 *.VC.db
-.DS_Store
