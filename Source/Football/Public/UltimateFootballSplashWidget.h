@@ -2,10 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "TimerManager.h"
 #include "UltimateFootballSplashWidget.generated.h"
 
-class UCanvasPanel;
-class UTimerHandle;
 
 UCLASS()
 class FOOTBALL_API UUltimateFootballSplashWidget : public UUserWidget
