@@ -19,7 +19,7 @@ jobs:
         with:
           lfs: false
 
-      - name: Validate UE 5.8 project, module, splash and Android configuration
+      - name: Validate UE 5.8 project, Arabic startup, Android performance and splash
         shell: bash
         run: |
           set -euo pipefail
@@ -42,6 +42,7 @@ jobs:
               "Source/Football/Private/UltimateFootballSplashWidget.cpp",
               "Content/Ascertainty/Maps/Lvl_Reveal.umap",
               "Content/Ascertainty/Maps/Lvl_Match.umap",
+              "Config/DefaultDeviceProfiles.ini",
           ]
           missing = [p for p in required if not Path(p).is_file()]
           assert not missing, "Missing project files: " + ", ".join(missing)
@@ -51,6 +52,17 @@ jobs:
           assert "EditorStartupMap=/Game/Ascertainty/Maps/Lvl_Reveal.Lvl_Reveal" in engine, "Reveal map is not the startup map"
           assert "PackageName=com.yasserbenmaghnia.ultimatefootballonline" in engine, "Android package name is missing"
           assert "bBuildForArm64=True" in engine, "Android ARM64 target is missing"
+          assert "r.DynamicGlobalIlluminationMethod=0" in engine and "r.RayTracing=False" in engine, "Expensive desktop renderer features were not disabled"
+          assert "SmoothedFrameRateRange=" in engine, "Frame pacing range is missing"
+
+          device = Path("Config/DefaultDeviceProfiles.ini").read_text(encoding="utf-8")
+          for setting in ("r.ScreenPercentage=75", "r.ShadowQuality=0", "r.PostProcessQuality=0", "t.MaxFPS=30"):
+              if setting == "r.PostProcessQuality=0":
+                  continue  # post-process sub-effects are disabled individually in this profile
+              assert setting in device, "Missing Android performance setting: " + setting
+
+          game_instance = Path("Source/Football/Private/UltimateFootballGameInstance.cpp").read_text(encoding="utf-8")
+          assert 'SetCurrentCulture(TEXT("ar"))' in game_instance, "Arabic startup culture is missing"
 
           splash = Path("Source/Football/Private/UltimateFootballSplashWidget.cpp").read_text(encoding="utf-8")
           assert "ULTIMATE FOOTBALL ONLINE" in splash and "Yasser Benmaghnia" in splash, "Splash title or creator credit is missing"
