@@ -28,7 +28,8 @@ public sealed class FootballLocalization : MonoBehaviour
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-        SetLanguage(FootballLanguage.Arabic);
+        int saved = PlayerPrefs.GetInt("football_language", (int)FootballLanguage.Arabic);
+        SetLanguage((FootballLanguage)Mathf.Clamp(saved, 0, 2));
     }
 
     public void SetLanguage(FootballLanguage language)
