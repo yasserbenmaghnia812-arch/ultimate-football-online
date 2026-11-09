@@ -21,6 +21,8 @@ jobs:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
         with:
           targetPlatform: Android
+          projectPath: .
+          buildMethod: FootballBuildScript.BuildAndroid
           buildsPath: build
           buildName: UltimateFootball
           versioning: Semantic
