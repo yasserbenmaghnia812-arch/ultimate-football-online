@@ -101,6 +101,7 @@ public sealed class FootballPrototype : MonoBehaviour
         var attributes = go.AddComponent<FootballPlayerAttributes>();
         var visual = go.AddComponent<FootballCharacterVisual>();
         visual.Initialize(mat);
+        go.AddComponent<FootballCharacterAnimationDriver>();
         if (controlled)
         {
             player = go.transform;
@@ -223,6 +224,8 @@ public sealed class FootballPrototype : MonoBehaviour
 
     private void Kick(float power, float lift)
     {
+        FootballCharacterAnimationDriver animationDriver = player != null ? player.GetComponent<FootballCharacterAnimationDriver>() : null;
+        animationDriver?.PlayKick();
         if (Vector3.Distance(player.position, ball.position) > 2.25f) return;
         Vector3 direction = player.forward.sqrMagnitude > 0.1f ? player.forward : Vector3.forward;
         if (power >= 9f)
@@ -383,6 +386,7 @@ public sealed class FootballPrototype : MonoBehaviour
 
     private void Tackle()
     {
+        if (player != null) player.GetComponent<FootballCharacterAnimationDriver>()?.PlayTackle();
         if (player == null || ballBody == null) return;
         if (playerAttributes != null && playerAttributes.stamina < 4f) return;
         Transform nearest = null;
