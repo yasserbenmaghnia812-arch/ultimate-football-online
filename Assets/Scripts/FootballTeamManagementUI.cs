@@ -12,6 +12,7 @@ public sealed class FootballTeamManagementUI : MonoBehaviour
     private string selectedOutgoing = "";
     private string selectedIncoming = "";
     private string substitutionMessage = "";
+    private Vector2 listScroll;
     private Rect panel = new Rect(20, 60, 540, 590);
     private GUIStyle label;
 
@@ -79,6 +80,7 @@ public sealed class FootballTeamManagementUI : MonoBehaviour
             }
         }
         if (!string.IsNullOrEmpty(substitutionMessage)) GUILayout.Label(substitutionMessage, label);
+        listScroll = GUILayout.BeginScrollView(listScroll, GUILayout.Height(Mathf.Max(180, panel.height - 250)));
         foreach (FootballSquadMember member in squad.Squad)
         {
             bool starter = squad.StartingEleven.Contains(member.id);
@@ -88,11 +90,13 @@ public sealed class FootballTeamManagementUI : MonoBehaviour
             else if (!starter && member.isAvailable && GUILayout.Button("IN", GUILayout.Width(65))) selectedIncoming = member.id;
             GUILayout.EndHorizontal();
         }
+        GUILayout.EndScrollView();
         GUILayout.Label("Substitutions update the roster model; live on-pitch player replacement is not yet wired.", label);
     }
 
     private void DrawCards()
     {
+        listScroll = GUILayout.BeginScrollView(listScroll, GUILayout.Height(Mathf.Max(180, panel.height - 100)));
         foreach (FootballSquadMember member in squad.Squad)
         {
             FootballPlayerCard card = cards[member.id];
@@ -102,5 +106,6 @@ public sealed class FootballTeamManagementUI : MonoBehaviour
             GUILayout.Label("DEF " + card.defending + "   PHY " + card.physical + "   STA " + card.stamina, label);
             GUILayout.EndVertical();
         }
+        GUILayout.EndScrollView();
     }
 }
