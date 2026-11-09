@@ -12,7 +12,7 @@ public sealed class FootballPrototype : MonoBehaviour
     private FootballPlayerAttributes playerAttributes;
     private Camera gameCamera;
     private Vector2 touchMove;
-    private bool shootPressed, passPressed, tacklePressed;
+    private bool shootPressed, passPressed, tacklePressed, switchPressed, sprintPressed;
     private FootballMatchRules matchRules;
     private int blueScore, redScore;
     private float matchTime = 180f;
@@ -88,6 +88,8 @@ public sealed class FootballPrototype : MonoBehaviour
         var collider = go.GetComponent<CapsuleCollider>();
         collider.height = 1.8f;
         var attributes = go.AddComponent<FootballPlayerAttributes>();
+        var visual = go.AddComponent<FootballCharacterVisual>();
+        visual.Initialize(mat);
         if (controlled)
         {
             player = go.transform;
@@ -169,6 +171,8 @@ public sealed class FootballPrototype : MonoBehaviour
     private void Update()
     {
         if (player == null || ball == null) return;
+        if (switchPressed || Input.GetKeyDown(KeyCode.Tab)) SwitchControlledPlayer();
+        sprintPressed = sprintPressed || Input.GetKey(KeyCode.LeftShift);
         Vector3 input = new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical"));
         if (input.sqrMagnitude < 0.01f) input = new Vector3(touchMove.x, 0, touchMove.y);
         input = Vector3.ClampMagnitude(input, 1);
@@ -176,6 +180,11 @@ public sealed class FootballPrototype : MonoBehaviour
         {
             playerAttributes.TickMovement(input.sqrMagnitude > 0.01f, Time.deltaTime);
             input *= playerAttributes.MovementMultiplier();
+            if (sprintPressed && input.sqrMagnitude > 0.01f)
+            {
+                input *= 1.42f;
+                playerAttributes.stamina = Mathf.Max(0f, playerAttributes.stamina - 0.55f * Time.deltaTime);
+            }
         }
         player.position += input * 6.2f * Time.deltaTime;
         player.position = new Vector3(Mathf.Clamp(player.position.x, -13, 13), 1.0f, Mathf.Clamp(player.position.z, -21, 21));
@@ -183,13 +192,14 @@ public sealed class FootballPrototype : MonoBehaviour
         if (shootPressed || Input.GetKeyDown(KeyCode.Space)) Kick(10f, 0.16f);
         if (passPressed || Input.GetKeyDown(KeyCode.E)) Kick(5.5f, 0.04f);
         if (tacklePressed || Input.GetKeyDown(KeyCode.Q)) Tackle();
-        shootPressed = passPressed = tacklePressed = false;
+        shootPressed = passPressed = tacklePressed = switchPressed = sprintPressed = false;
         if (matchRules != null)
         {
             matchRules.Tick(Time.deltaTime);
             if (matchRules.State == FootballMatchState.HalfTime) matchRules.ResumeSecondHalf();
         }
         UpdateAI();
+        SeparatePlayers();
         matchTime -= Time.deltaTime;
         if (matchTime <= 0) matchTime = 0;
         CheckGoal();
@@ -256,6 +266,11 @@ public sealed class FootballPrototype : MonoBehaviour
             bot.position += Vector3.ClampMagnitude(step, delta.magnitude);
             bot.rotation = Quaternion.LookRotation(delta.normalized);
         }
+        else
+        {
+            FootballPlayerAttributes restingAttributes = bot.GetComponent<FootballPlayerAttributes>();
+            if (restingAttributes != null) restingAttributes.TickMovement(false, Time.deltaTime);
+        }
         if (Vector3.Distance(bot.position, ball.position) < 1.35f && Random.value < 0.025f)
         {
             Vector3 towardGoal = bot.position.z > 0 ? Vector3.back : Vector3.forward;
@@ -286,6 +301,51 @@ public sealed class FootballPrototype : MonoBehaviour
             return new Vector3(x[index - 5], 1.0f, sign * 5f);
         }
         return new Vector3(index == 9 ? -4f : 4f, 1.0f, sign * 1f);
+    }
+
+    private void SwitchControlledPlayer()
+    {
+        Transform candidate = null;
+        float best = float.MaxValue;
+        for (int i = 1; i < blueTeam.Count; i++)
+        {
+            Transform teammate = blueTeam[i];
+            float distance = Vector3.Distance(teammate.position, ball.position);
+            if (teammate != player && distance < best)
+            {
+                best = distance;
+                candidate = teammate;
+            }
+        }
+        if (candidate == null) return;
+        player = candidate;
+        playerAttributes = player.GetComponent<FootballPlayerAttributes>();
+    }
+
+    private void SeparatePlayers()
+    {
+        for (int a = 0; a < blueTeam.Count; a++)
+        {
+            for (int b = 0; b < redTeam.Count; b++)
+                SeparatePair(blueTeam[a], redTeam[b]);
+            for (int b = a + 1; b < blueTeam.Count; b++)
+                SeparatePair(blueTeam[a], blueTeam[b]);
+        }
+        for (int a = 0; a < redTeam.Count; a++)
+            for (int b = a + 1; b < redTeam.Count; b++)
+                SeparatePair(redTeam[a], redTeam[b]);
+    }
+
+    private void SeparatePair(Transform a, Transform b)
+    {
+        Vector3 delta = a.position - b.position;
+        delta.y = 0f;
+        float distance = delta.magnitude;
+        const float minimumDistance = 0.78f;
+        if (distance <= 0.001f || distance >= minimumDistance) return;
+        Vector3 correction = delta.normalized * ((minimumDistance - distance) * 0.5f);
+        if (a != player) a.position += correction;
+        if (b != player) b.position -= correction;
     }
 
     private void Tackle()
@@ -349,6 +409,8 @@ public sealed class FootballPrototype : MonoBehaviour
         if (GUI.Button(new Rect(Screen.width - 104, Screen.height - 84, 88, 64), (FootballLocalization.Instance != null ? FootballLocalization.Instance.Get("shoot") : "SHOOT"), buttonStyle)) shootPressed = true;
         if (GUI.Button(new Rect(Screen.width - 104, Screen.height - 158, 88, 60), (FootballLocalization.Instance != null ? FootballLocalization.Instance.Get("pass") : "PASS"), buttonStyle)) passPressed = true;
         if (GUI.Button(new Rect(Screen.width - 104, Screen.height - 232, 88, 60), (FootballLocalization.Instance != null ? FootballLocalization.Instance.Get("tackle") : "TACKLE"), buttonStyle)) tacklePressed = true;
+        if (GUI.Button(new Rect(Screen.width - 196, Screen.height - 158, 84, 60), "SWITCH", buttonStyle)) switchPressed = true;
+        sprintPressed = GUI.RepeatButton(new Rect(Screen.width - 196, Screen.height - 84, 84, 64), "SPRINT", buttonStyle);
         GUI.color = Color.white;
         GUI.backgroundColor = Color.white;
     }
