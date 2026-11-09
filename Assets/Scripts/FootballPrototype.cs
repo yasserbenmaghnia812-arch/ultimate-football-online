@@ -27,6 +27,7 @@ public sealed class FootballPrototype : MonoBehaviour
     private GUIStyle hud, buttonStyle;
     private Material blueMat, redMat, whiteMat, grassMat;
     private bool use60Fps;
+    private bool lastTouchHome = true;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void StartPrototype()
@@ -465,7 +466,7 @@ public sealed class FootballPrototype : MonoBehaviour
         Vector3 away = ball.position - nearest.position;
         away.y = 0.08f;
         if (ballPhysics != null) ballPhysics.Kick(away.normalized, 6.5f, 0.08f, Vector3.zero);
-        if (matchStatistics != null) matchStatistics.RegisterTackle(true);
+        lastTouchHome = true;\n        if (matchStatistics != null) matchStatistics.RegisterTackle(true);
         if (playerAttributes != null) playerAttributes.stamina = Mathf.Max(0f, playerAttributes.stamina - 3.5f);
     }
 
