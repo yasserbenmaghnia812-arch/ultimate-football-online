@@ -96,6 +96,44 @@ public sealed class FootballRefereeSystem : MonoBehaviour
         DisciplineEvent?.Invoke(playerId, card);
         return sentOff;
     }
+    public bool HandleBallOutOfPlay(Vector3 ballPosition, bool lastTouchHome)
+    {
+        const float halfWidth = 13.8f;
+        const float halfLength = 21.8f;
+        if (ballPosition.x > -halfWidth && ballPosition.x < halfWidth &&
+            ballPosition.z > -halfLength && ballPosition.z < halfLength)
+            return false;
+
+        if (Mathf.Abs(ballPosition.x) >= halfWidth)
+        {
+            float x = Mathf.Sign(ballPosition.x) * 13.55f;
+            float z = Mathf.Clamp(ballPosition.z, -21.3f, 21.3f);
+            CallRestart(FootballRestartType.ThrowIn, new Vector3(x, 0.22f, z),
+                !lastTouchHome, "Ball out over touchline");
+            return true;
+        }
+
+        bool crossedPositiveGoalLine = ballPosition.z >= halfLength;
+        bool lastTouchByAttackingTeam = crossedPositiveGoalLine ? lastTouchHome : !lastTouchHome;
+        bool awardedToHome = crossedPositiveGoalLine ? !lastTouchHome : lastTouchHome;
+        float goalLineZ = crossedPositiveGoalLine ? 21.2f : -21.2f;
+
+        if (lastTouchByAttackingTeam)
+        {
+            float cornerX = Mathf.Sign(ballPosition.x == 0f ? 1f : ballPosition.x) * 13.55f;
+            CallRestart(FootballRestartType.Corner,
+                new Vector3(cornerX, 0.22f, goalLineZ), awardedToHome, "Corner kick");
+        }
+        else
+        {
+            CallRestart(FootballRestartType.GoalKick,
+                new Vector3(Mathf.Clamp(ballPosition.x, -4f, 4f), 0.22f,
+                    crossedPositiveGoalLine ? 17.2f : -17.2f),
+                awardedToHome, "Goal kick");
+        }
+        return true;
+    }
+
 
     public static bool IsInsidePenaltyArea(Vector3 position, bool positiveZGoal)
     {
