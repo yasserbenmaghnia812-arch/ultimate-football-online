@@ -32,7 +32,9 @@ This is a plan, not a claim that every feature is implemented. Verify each item 
 - [ ] Implement fouls, advantage, free kicks and penalties.
 - [ ] Implement yellow/red cards and second-yellow dismissal.
 - [ ] Add substitutions, match clock, score and event statistics.
-- [ ] Add Arabic RTL and English localization.
+- [x] Set Arabic as the initial runtime culture; full Arabic RTL widget translation and font verification remain pending.
+- [ ] Add English/Arabic localization resources for all Blueprint labels and menus.
+- [ ] Add a wide broadcast-style follow camera with ball tracking and adjustable zoom; requires editing and testing the match Blueprint in Unreal Editor.
 - [ ] Use only licensed or original models, animations, music and commentary.
 
 ## Stage 4 — teams and online
@@ -44,11 +46,15 @@ This is a plan, not a claim that every feature is implemented. Verify each item 
 
 ## Stage 5 — Android and release
 - [x] Add Android package name, landscape orientation and ARM64 baseline settings.
+- [x] Disable costly desktop renderer features and add an Android low-end device profile targeting up to 30 FPS.
 - [ ] Configure and validate UE 5.8 Android SDK/NDK/JDK.
-- [ ] Create low/medium/high scalability profiles.
-- [ ] Profile memory, thermals and frame time on target Android hardware.
+- [ ] Profile memory, thermals and frame time on target Android hardware; 30 FPS is a target, not a verified result.
+- [ ] Tune low/medium/high scalability profiles from device measurements.
 - [ ] Test touch controls, UI scaling, suspend/resume and network changes.
-- [ ] Produce a signed APK and verify installation and gameplay on a physical device.
+- [ ] Produce a signed APK and verify installation and gameplay on a physical Android device.
 
 ## Build constraint
 GitHub Actions can package the project only with a compatible Unreal Engine 5.8 build environment and valid Epic/Unreal build access. No licensing bypass is used.
+
+## Current technical limitation
+The match map and gameplay Blueprints are Git LFS binary assets. GitHub's text-file editor cannot safely modify their camera nodes or existing widget labels. Those changes must be made in Unreal Editor after the LFS objects are pulled; do not replace the binary assets with text placeholders.
