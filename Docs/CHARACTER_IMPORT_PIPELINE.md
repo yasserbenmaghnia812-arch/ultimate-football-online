@@ -47,3 +47,11 @@ Use a locomotion Blend Tree driven by `Speed` and add transitions for the action
 - [Player Motion soccer clips](https://playermotion.games/playbook/free-soccer-animations-for-unity) offers free general-purpose samples; soccer-specific clips are generally paid. Check the licence on each downloaded file.
 
 No character or animation asset is downloaded or imported by this repository change. Unity Editor access and the asset files are required to complete that step.
+
+## Additional football-specific source
+
+- [TechLabID free 3D female soccer player](https://github.com/TechLabID/techlabid/blob/main/FWPlayer/Receive-Soccerball/README.md) is a rigged, Mixamo-ready soccer character with one included soccer-player animation. Its README states free personal and commercial use, but prohibits reselling or redistributing the raw asset pack. Download it from the linked author's releases, inspect the included `LICENSE.txt`, then import the FBX and create a prefab named `BluePlayer` or `RedPlayer`. The asset is a single female model, not a complete 22-player squad.
+- [KinemIQ CC0 animation sample](https://kinemiq.itch.io/free-game-animations) includes 35 CC0 general humanoid clips (walk/run/sprint etc.). These are useful for locomotion but are not a complete football-specific action set.
+- [Player Motion soccer animation catalogue](https://playermotion.games/playbook/free-soccer-animations-for-unity) contains soccer-specific clips; the catalogue labels some previews as free, while many downloadable moves are paid. Check the individual price and licence before use.
+
+The repository currently contains the runtime prefab loader and Animator bridge only. No FBX, textures, Avatar, Animator Controller, or third-party clip has been imported into this repository. This guide is not evidence that the model files are already in the APK.
