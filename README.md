@@ -79,3 +79,9 @@ This repository is now a more complete prototype scaffold, **not** a finished FI
 - Device profiling, QA, store signing, and verified APK output. The current GitHub Actions runs stop before Unity compilation because Unity Personal license secrets are not configured.
 
 All shipped code, models, animation, audio, club marks, kits, player identities, and UI must be original or appropriately licensed. Commercial games are gameplay-design references only; no proprietary EA/Konami code or assets are included.
+
+## Current implementation guides
+
+- [Online multiplayer status and room setup](Docs/ONLINE_MULTIPLAYER_STATUS.md)
+- [Unity character and animation import pipeline](Docs/CHARACTER_IMPORT_PIPELINE.md)
+- [Implementation status and verification](Docs/IMPLEMENTATION_STATUS.md)
