@@ -462,7 +462,16 @@ public sealed class FootballPrototype : MonoBehaviour
             float distance = Vector3.Distance(player.position, redTeam[i].position);
             if (distance < nearestDistance) { nearestDistance = distance; nearest = redTeam[i]; }
         }
-        if (nearest == null || Vector3.Distance(player.position, ball.position) > 2.8f) return;
+        float ballDistance = Vector3.Distance(player.position, ball.position);
+        if (nearest != null && nearestDistance < 1.1f && ballDistance > 1.75f && referee != null)
+        {
+            bool insidePenaltyArea =
+                FootballRefereeSystem.IsInsidePenaltyArea(player.position, true) ||
+                FootballRefereeSystem.IsInsidePenaltyArea(player.position, false);
+            referee.RegisterFoul(true, player.name, player.position, insidePenaltyArea);
+            return;
+        }
+        if (nearest == null || ballDistance > 2.8f) return;
         Vector3 away = ball.position - nearest.position;
         away.y = 0.08f;
         if (ballPhysics != null) ballPhysics.Kick(away.normalized, 6.5f, 0.08f, Vector3.zero);
