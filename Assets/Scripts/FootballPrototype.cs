@@ -455,7 +455,6 @@ public sealed class FootballPrototype : MonoBehaviour
     {
         if (ball.position.z > 21.4f && ball.position.y < 1.95f && Mathf.Abs(ball.position.x) < 3.1f) { redScore++; if (matchRules != null) matchRules.AddGoal(false); ResetKickoff(); }
         else if (ball.position.z < -21.4f && ball.position.y < 1.95f && Mathf.Abs(ball.position.x) < 3.1f) { blueScore++; if (matchRules != null) matchRules.AddGoal(true); ResetKickoff(); }
-        else if (Mathf.Abs(ball.position.x) > 14f || Mathf.Abs(ball.position.z) > 22.2f) { referee?.Signal("Ball out of play - restart required", ball.position); ResetKickoff(); }
     }
 
     private void ResetKickoff()
