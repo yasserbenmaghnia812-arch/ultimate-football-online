@@ -33,8 +33,9 @@ jobs:
           cp .github/workflows/sync-upstream.yml /tmp/preserved-workflow/
           git clone https://github.com/grain-by-grain/ascertainty-fc.git /tmp/ue-project
           git -C /tmp/ue-project lfs install
-          git -C /tmp/ue-project lfs fetch origin main
+          git -C /tmp/ue-project lfs fetch --all origin
           git -C /tmp/ue-project lfs checkout
+          git -C /tmp/ue-project lfs fsck --objects
 
       - name: Copy upstream Git LFS assets into this repository
         env:
