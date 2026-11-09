@@ -1,0 +1,59 @@
+name: Validate Unreal project structure
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository without downloading large LFS assets
+        uses: actions/checkout@v4
+        with:
+          lfs: false
+
+      - name: Validate UE 5.8 project, module, splash and Android configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          project = json.loads(Path("Football.uproject").read_text(encoding="utf-8"))
+          assert project.get("EngineAssociation") == "5.8", "Expected Unreal Engine 5.8"
+          modules = project.get("Modules", [])
+          assert any(m.get("Name") == "Football" and m.get("Type") == "Runtime" for m in modules), "Football runtime module is not registered"
+
+          required = [
+              "Source/Football/Football.Build.cs",
+              "Source/Football.Target.cs",
+              "Source/FootballEditor.Target.cs",
+              "Source/Football/Public/UltimateFootballGameInstance.h",
+              "Source/Football/Private/UltimateFootballGameInstance.cpp",
+              "Source/Football/Public/UltimateFootballSplashWidget.h",
+              "Source/Football/Private/UltimateFootballSplashWidget.cpp",
+              "Content/Ascertainty/Maps/Lvl_Reveal.umap",
+              "Content/Ascertainty/Maps/Lvl_Match.umap",
+          ]
+          missing = [p for p in required if not Path(p).is_file()]
+          assert not missing, "Missing project files: " + ", ".join(missing)
+
+          engine = Path("Config/DefaultEngine.ini").read_text(encoding="utf-8")
+          assert "GameInstanceClass=/Script/Football.UltimateFootballGameInstance" in engine, "Splash GameInstance is not configured"
+          assert "EditorStartupMap=/Game/Ascertainty/Maps/Lvl_Reveal.Lvl_Reveal" in engine, "Reveal map is not the startup map"
+          assert "PackageName=com.yasserbenmaghnia.ultimatefootballonline" in engine, "Android package name is missing"
+          assert "bBuildForArm64=True" in engine, "Android ARM64 target is missing"
+
+          splash = Path("Source/Football/Private/UltimateFootballSplashWidget.cpp").read_text(encoding="utf-8")
+          assert "ULTIMATE FOOTBALL ONLINE" in splash and "Yasser Benmaghnia" in splash, "Splash title or creator credit is missing"
+          assert "3.0f" in splash, "Three-second splash timer is missing"
+          print("Static project validation passed. This does not replace an Unreal Editor compile or Android device test.")
+          PY
