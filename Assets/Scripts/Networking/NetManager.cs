@@ -21,7 +21,7 @@ namespace SanAndreasUnity.Net
 
         public static bool dontListen { get { return NetworkServer.dontListen; } set { NetworkServer.dontListen = value; } }
 
-		public static int maxNumPlayers { get => NetworkManager.singleton.maxConnections; set { NetworkManager.singleton.maxConnections = value; } }
+		public static int maxNumPlayers { get => NetworkManager.singleton.maxConnections; set { NetworkManager.singleton.maxConnections = Mathf.Clamp(value, 1, 8); } }
 
 		public static int numConnections => NetworkServer.connections.Count;
 
