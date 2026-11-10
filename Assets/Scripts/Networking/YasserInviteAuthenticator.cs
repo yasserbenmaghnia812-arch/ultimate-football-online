@@ -7,9 +7,9 @@ namespace SanAndreasUnity.Net
     public sealed class YasserInviteAuthenticator : NetworkAuthenticator
     {
         [SerializeField, Tooltip("Share this private room code only with invited friends.")]
-        private string serverInviteCode = "YASSER8";
+        private string serverInviteCode = "CHANGE-THIS-CODE";
 
-        public static string ClientInviteCode = "YASSER8";
+        public static string ClientInviteCode = string.Empty;
 
         public struct InviteRequest : NetworkMessage
         {
@@ -47,7 +47,8 @@ namespace SanAndreasUnity.Net
 
         private void OnServerInviteRequest(NetworkConnectionToClient conn, InviteRequest message)
         {
-            string expected = (serverInviteCode ?? string.Empty).Trim();
+            string configuredCode = Environment.GetEnvironmentVariable("YASSER_GTA_INVITE_CODE");
+            string expected = (string.IsNullOrWhiteSpace(configuredCode) ? serverInviteCode : configuredCode).Trim();
             string supplied = (message.code ?? string.Empty).Trim();
 
             bool valid = expected.Length >= 6 &&
