@@ -1,0 +1,87 @@
+name: Import San Andreas Unity into YASSER GTA
+
+on:
+  push:
+    paths:
+      - ".github/workflows/import-gta.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: yasser-gta-source-import
+  cancel-in-progress: false
+
+jobs:
+  import-upstream:
+    if: github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[skip ci]')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out current repository
+        uses: actions/checkout@v4
+        with:
+          path: current
+          fetch-depth: 1
+
+      - name: Clone complete upstream project and submodules
+        run: |
+          git clone --branch dev --recurse-submodules https://github.com/in0finite/SanAndreasUnity.git upstream
+
+      - name: Add YASSER GTA project notes
+        run: |
+          mkdir -p upstream/YASSER-GTA-SETUP
+          cat > upstream/YASSER-GTA-SETUP/README.md <<'EOF'
+          # YASSER GTA
+
+          Custom project based on SanAndreasUnity.
+
+          ## Upstream
+          - Source: https://github.com/in0finite/SanAndreasUnity
+          - License: MIT (see upstream LICENSE)
+          - Engine: Unity
+          - Upstream default branch: dev
+
+          ## Important requirements
+          - This repository is an open-source reimplementation of the GTA San Andreas engine, not a distribution of the original commercial game.
+          - You must provide your own legally obtained GTA San Andreas game data. Original game assets are not included.
+          - The upstream project documents Android support and multiplayer support, including dedicated server and host/client modes.
+          - Use the upstream Unity version and setup instructions in its README and Docs.
+
+          ## YASSER GTA custom targets
+          - Android APK build and device validation.
+          - Arabic-first UI and touch controls.
+          - Red cinematic splash screen for 3 seconds, with "Yasser Benmaghnia" in white.
+          - Private multiplayer server with a maximum of 8 players and invite-only access.
+
+          These custom targets are specifications, not claims that the features or APK are already implemented. The 8-player cap and splash-screen changes must be implemented and tested in Unity before release.
+          EOF
+
+      - name: Preserve this import workflow
+        run: |
+          mkdir -p upstream/.github/workflows
+          cp current/.github/workflows/import-gta.yml upstream/.github/workflows/import-gta.yml
+
+      - name: Validate imported Unity project
+        run: |
+          test -f upstream/ProjectSettings/ProjectVersion.txt
+          test -d upstream/Assets
+          test -f upstream/Packages/manifest.json
+          test -f upstream/LICENSE
+          echo "Unity project structure validated."
+          cat upstream/ProjectSettings/ProjectVersion.txt
+
+      - name: Commit imported source
+        working-directory: upstream
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Import SanAndreasUnity source for YASSER GTA [skip ci]" || echo "No overlay changes to commit"
+
+      - name: Replace main branch with imported source
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git -C upstream remote add yasser-origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git -C upstream push --force yasser-origin HEAD:main
