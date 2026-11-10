@@ -106,7 +106,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5e8a1c7d9f234b6aa1c3d5e7f9b20468, type: 3}
   m_Name:
   m_EditorClassIdentifier:
-  serverInviteCode: YASSER8
+  serverInviteCode: CHANGE-THIS-CODE
 --- !u!114 &782341987654321002
 MonoBehaviour:
   m_ObjectHideFlags: 0
