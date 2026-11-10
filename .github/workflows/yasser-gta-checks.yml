@@ -1,0 +1,35 @@
+name: YASSER GTA source checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Unity project structure
+        run: |
+          test -f ProjectSettings/ProjectVersion.txt
+          test -f Packages/manifest.json
+          test -f Assets/Scenes/Startup.unity
+          test -f Assets/Prefabs/NetworkManager.prefab
+          test -f Assets/Scripts/Networking/NetManager.cs
+          test -f Assets/Scripts/Behaviours/YasserSplashScreen.cs
+          test -f YASSER-GTA-SETUP/README.md
+      - name: Verify eight-player limit
+        run: |
+          grep -F 'Mathf.Clamp(value, 1, 8)' Assets/Scripts/Networking/NetManager.cs
+          grep -F 'maxConnections: 8' Assets/Prefabs/NetworkManager.prefab
+      - name: Verify branded splash screen
+        run: |
+          grep -F 'Yasser Benmaghnia' Assets/Scripts/Behaviours/YasserSplashScreen.cs
+          grep -F 'DurationSeconds = 3f' Assets/Scripts/Behaviours/YasserSplashScreen.cs
+      - name: Report Unity editor version
+        run: cat ProjectSettings/ProjectVersion.txt
