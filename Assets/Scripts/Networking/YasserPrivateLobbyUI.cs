@@ -6,7 +6,7 @@ namespace SanAndreasUnity.Net
     public sealed class YasserPrivateLobbyUI : MonoBehaviour
     {
         private string m_address = "127.0.0.1";
-        private string m_inviteCode = "YASSER8";
+        private string m_inviteCode = string.Empty;
         private string m_status = "ادخل عنوان السيرفر ورمز الدعوة";
 
         private void OnGUI()
