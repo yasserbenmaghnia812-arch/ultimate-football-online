@@ -1,5 +1,11 @@
 
-# San Andreas Unity
+# YASSER GTA — San Andreas Unity
+
+> Custom Android-focused project by Yasser Benmaghnia, based on the open-source San Andreas Unity engine.
+
+Project notes: [YASSER-GTA-SETUP](YASSER-GTA-SETUP/README.md) · Original engine documentation: [upstream README](https://github.com/in0finite/SanAndreasUnity/blob/dev/README.md)
+
+
 
 <br>
 
