@@ -40,11 +40,11 @@ Custom project based on SanAndreasUnity.
 
 ## Private server quick configuration
 
-- Default invite code in the NetworkManager prefab: `YASSER8`. Change it in the Unity Inspector before distributing a server build.
+- No usable invite secret is committed to this public repository. Set a private code in the NetworkManager prefab Inspector (`serverInviteCode`) or set the dedicated server environment variable `YASSER_GTA_INVITE_CODE`. Never commit the real invite code.
 - Default network port: `7777` (the upstream prefab uses Telepathy transport; allow/forward TCP port 7777 on the server host).
 - Server capacity: `8` maximum, enforced in both the prefab and `NetManager.maxNumPlayers`.
 - Headless server launch arguments supported by the upstream command-line handler: `-startServer -portNum 7777 -maxNumPlayers 8 -scene Main`.
-- Friends enter the server IP and shared invite code in the YASSER GTA private-server panel.
+- Friends enter the server IP and the private shared invite code in the YASSER GTA private-server panel.
 
 ## Validation status
 
