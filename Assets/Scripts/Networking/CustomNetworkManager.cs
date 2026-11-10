@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
@@ -9,6 +10,46 @@ namespace SanAndreasUnity.Net
 {
     public class CustomNetworkManager : NetworkManager
     {
+        private Coroutine m_reconnectRoutine;
+        private int m_reconnectAttempts;
+        private const int MaxReconnectAttempts = 5;
+
+        public override void OnClientConnect()
+        {
+            base.OnClientConnect();
+            m_reconnectAttempts = 0;
+            if (m_reconnectRoutine != null)
+            {
+                StopCoroutine(m_reconnectRoutine);
+                m_reconnectRoutine = null;
+            }
+        }
+
+        public override void OnClientDisconnect()
+        {
+            base.OnClientDisconnect();
+            if (NetStatus.IsServer || m_reconnectRoutine != null)
+                return;
+
+            m_reconnectRoutine = StartCoroutine(ReconnectClient());
+        }
+
+        private IEnumerator ReconnectClient()
+        {
+            while (m_reconnectAttempts < MaxReconnectAttempts && !NetworkClient.isConnected)
+            {
+                m_reconnectAttempts++;
+                yield return new WaitForSecondsRealtime(3f);
+
+                if (NetworkClient.isConnected)
+                    break;
+
+                Debug.Log($"YASSER GTA: reconnect attempt {m_reconnectAttempts}/{MaxReconnectAttempts}");
+                StartClient();
+            }
+
+            m_reconnectRoutine = null;
+        }
         public override void OnClientConnect()
         {
             if (NetStatus.IsServer)
