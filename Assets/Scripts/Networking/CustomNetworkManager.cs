@@ -14,17 +14,6 @@ namespace SanAndreasUnity.Net
         private int m_reconnectAttempts;
         private const int MaxReconnectAttempts = 5;
 
-        public override void OnClientConnect()
-        {
-            base.OnClientConnect();
-            m_reconnectAttempts = 0;
-            if (m_reconnectRoutine != null)
-            {
-                StopCoroutine(m_reconnectRoutine);
-                m_reconnectRoutine = null;
-            }
-        }
-
         public override void OnClientDisconnect()
         {
             base.OnClientDisconnect();
@@ -52,16 +41,20 @@ namespace SanAndreasUnity.Net
         }
         public override void OnClientConnect()
         {
+            m_reconnectAttempts = 0;
+            if (m_reconnectRoutine != null)
+            {
+                StopCoroutine(m_reconnectRoutine);
+                m_reconnectRoutine = null;
+            }
+
             if (NetStatus.IsServer)
             {
-                // just do default action
                 base.OnClientConnect();
                 return;
             }
 
-            // default method: if no scene was loaded, do Ready/AddPlayer
-            // we won't do this until loading process finishes
-
+            // Do not create the player until the world loader has finished.
             if (Loader.HasLoaded)
                 base.OnClientConnect();
         }
