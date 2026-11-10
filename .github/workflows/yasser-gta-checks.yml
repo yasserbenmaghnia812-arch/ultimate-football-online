@@ -14,19 +14,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Validate Unity project structure
+      - name: Validate Unity project structure and multiplayer wiring
         run: |
           test -f ProjectSettings/ProjectVersion.txt
           test -f Packages/manifest.json
           test -f Assets/Scenes/Startup.unity
           test -f Assets/Prefabs/NetworkManager.prefab
+          test -f Assets/Prefabs/NetPlayer.prefab
           test -f Assets/Scripts/Networking/NetManager.cs
+          test -f Assets/Scripts/Networking/CustomNetworkManager.cs
+          test -f Assets/Scripts/Networking/YasserInviteAuthenticator.cs
+          test -f Assets/Scripts/Networking/YasserPrivateLobbyUI.cs
+          test -f Assets/Scripts/Networking/YasserPrivateChat.cs
           test -f Assets/Scripts/Behaviours/YasserSplashScreen.cs
+          test -f Assets/Scripts/UI/TouchInput.cs
           test -f YASSER-GTA-SETUP/README.md
+          grep -F 'authenticator: {fileID: 782341987654321001}' Assets/Prefabs/NetworkManager.prefab
+          grep -F 'guid: 5e8a1c7d9f234b6aa1c3d5e7f9b20468' Assets/Prefabs/NetworkManager.prefab
+          grep -F 'guid: 6f9b2d8e1a345c7bb2d4e6f8a0c31579' Assets/Prefabs/NetPlayer.prefab
       - name: Verify eight-player limit
         run: |
           grep -F 'Mathf.Clamp(value, 1, 8)' Assets/Scripts/Networking/NetManager.cs
           grep -F 'maxConnections: 8' Assets/Prefabs/NetworkManager.prefab
+      - name: Verify private server, chat and reconnect features
+        run: |
+          grep -F 'ServerAccept(conn)' Assets/Scripts/Networking/YasserInviteAuthenticator.cs
+          grep -F 'ServerReject(conn)' Assets/Scripts/Networking/YasserInviteAuthenticator.cs
+          grep -F 'CmdSendMessage' Assets/Scripts/Networking/YasserPrivateChat.cs
+          grep -F 'RpcReceiveMessage' Assets/Scripts/Networking/YasserPrivateChat.cs
+          grep -F 'MaxReconnectAttempts = 5' Assets/Scripts/Networking/CustomNetworkManager.cs
+          grep -F 'StartClient()' Assets/Scripts/Networking/CustomNetworkManager.cs
       - name: Verify branded splash screen
         run: |
           grep -F 'Yasser Benmaghnia' Assets/Scripts/Behaviours/YasserSplashScreen.cs
