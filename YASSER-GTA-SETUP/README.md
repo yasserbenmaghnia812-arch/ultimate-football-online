@@ -49,3 +49,22 @@ Custom project based on SanAndreasUnity.
 ## Validation status
 
 The repository source checks validate that the new scripts and prefab references exist. A Unity Editor compile, Android build, live two-device network test, and dedicated-server deployment have not yet been run in this environment. Do not treat the feature set as release-tested until those checks pass.
+
+
+## Automated build pipeline
+
+The repository includes `.github/workflows/build-yasser-gta.yml`:
+- Builds an Android APK and a Linux x86_64 dedicated-server binary with Unity `2020.3.26f1`.
+- Uses the GameCI Unity Builder and uploads each output as a GitHub Actions artifact.
+- Requires a valid Unity CI license stored as the repository Actions secret `UNITY_LICENSE`. Optional `UNITY_EMAIL` and `UNITY_PASSWORD` secrets may be required by the selected Unity license flow.
+- If `UNITY_LICENSE` is absent, the workflow reports the missing prerequisite and skips both builds; it does not create a fake APK.
+
+## Dedicated server deployment requirements
+
+- The server binary is a Linux x86_64 standalone build. Launch it headlessly with: `-batchmode -nographics -startServer -portNum 7777 -maxNumPlayers 8 -scene Main`.
+- The current prefab uses Telepathy TCP transport on port `7777`; the host must accept public inbound TCP connections on that port.
+- Set `YASSER_GTA_INVITE_CODE` as a private environment variable on the server host. Do not put the real code in Git.
+- The server host must also have the game data required by SanAndreasUnity. The upstream project does not distribute the commercial GTA San Andreas data files.
+- Render Free Web Services are HTTP-proxy services and spin down after 15 minutes without inbound HTTP/WebSocket traffic; they are not a suitable public raw-TCP game-server endpoint for the current Telepathy transport. A reachable Linux host/VPS with inbound TCP 7777 is still required.
+
+The build workflow is configured but has not produced artifacts until a valid Unity license secret is supplied. A dedicated server is not considered deployed until a reachable host is configured and a real client connection is tested.
